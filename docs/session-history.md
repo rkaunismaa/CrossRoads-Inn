@@ -184,3 +184,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Scene integration: the backdrop sits behind everything, the portrait follows the traveler shown (a thief shows as the merchant), and Bram has his own portrait. It falls back to grey boxes if art is missing. 3 new tests; 79 GDScript tests passing.
 - Screenshots of the real scene showed white text was hard to read over the painting. Added dark backing panels behind text and hid empty bubbles.
 - Updated `docs/design.md` (stage 3 done), `README.md` (status, layout, and the AI-art disclosure note), the AI log and this history.
+
+### 3. "1" (merge locally)
+- Merged `art-stage3` into `main`. On `main`, 79 GDScript tests, 111 Python tests and 6 art-tool tests pass. Deleted the local branch, which was never pushed. Stopped the ComfyUI server to free the GPU.
