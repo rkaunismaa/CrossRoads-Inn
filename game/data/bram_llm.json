@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "url": "http://127.0.0.1:11434/api/chat",
+  "model": "qwen3:4b-instruct",
+  "timeout_s": 4.0,
+  "temperature": 0.9,
+  "max_words": 30
+}

@@ -5,6 +5,8 @@
 set -uo pipefail
 
 GODOT="${GODOT:-godot}"
+# Unit tests never talk to the local LLM unless asked (CROSSROADS_LLM_LIVE=1 runs the one live test).
+if [[ "${CROSSROADS_LLM_LIVE:-}" == "1" ]]; then export CROSSROADS_LLM=on; else export CROSSROADS_LLM=off; fi
 GAME_DIR="$(cd "$(dirname "$0")/../game" && pwd)"
 
 # Import once so class_name scripts are registered in a fresh checkout.
