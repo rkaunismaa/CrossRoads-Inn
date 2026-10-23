@@ -108,9 +108,15 @@ class ScriptedPlayer:
     def __init__(self, market: dict[int, tuple[int, int]], decisions: dict[tuple[int, int], Action]) -> None:
         self.market_buys = market
         self.decisions = decisions
+        self.defaulted: list[tuple[int, int]] = []  # arrived travelers with no recorded decision
+        self.sheet_rows: dict[tuple[int, int], int] = {}  # (day, slot) -> HandPlay row, for warnings
+        self.already_warned: set[tuple[int, int]] = set()  # bad cells already reported by read_decisions
 
     def market(self, state: InnState, day: DayView, params: Params) -> tuple[int, int]:
         return self.market_buys.get(day.day, (0, 0))
 
     def decide(self, state: InnState, day: DayView, slot: int, view: TravelerView, params: Params) -> Action:
-        return self.decisions.get((day.day, slot), "decline")
+        if (day.day, slot) not in self.decisions:
+            self.defaulted.append((day.day, slot))
+            return "decline"
+        return self.decisions[(day.day, slot)]

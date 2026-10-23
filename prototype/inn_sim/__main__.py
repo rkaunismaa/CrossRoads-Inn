@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from inn_sim import report
-from inn_sim.params import load_params, params_from_defaults
+from inn_sim.params import ParamError, WorkbookLocked, load_params, params_from_defaults
 
 
 def _params(ods: str) -> dict[str, float]:
@@ -79,7 +79,7 @@ def cmd_deal(args: argparse.Namespace) -> int:
 
 def cmd_replay(args: argparse.Namespace) -> int:
     from inn_sim.deal import deal_run
-    from inn_sim.handplay import dealt_columns_match, read_decisions
+    from inn_sim.handplay import blank_decision_warnings, dealt_columns_match, read_decisions
     from inn_sim.params import read_sheet
     from inn_sim.players import CarefulPlayer
     from inn_sim.rules import play_run
@@ -93,6 +93,8 @@ def cmd_replay(args: argparse.Namespace) -> int:
     for w in warnings:
         print(f"warning: {w}")
     yours = play_run(params, deal, player)
+    for w in blank_decision_warnings(player):
+        print(f"warning: {w}")
     careful = play_run(params, deal, CarefulPlayer())
     print(f"--- your run (seed {seed}) ---")
     print("\n".join(yours.ledger))
@@ -137,7 +139,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except (ParamError, WorkbookLocked, FileExistsError, ValueError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

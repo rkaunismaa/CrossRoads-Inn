@@ -91,3 +91,22 @@ def test_fraction_friendly_params_are_nudged():
         assert name not in untested
     assert report._nudge("price_food", 2, 1.1) == pytest.approx(2.2)
     assert report._nudge("fire_base", 1, 1.1) == 1  # whole firewood, rounded up by the rules
+
+
+def test_cli_bad_param_is_an_error_not_a_traceback(tmp_path, monkeypatch, capsys):
+    from inn_sim.params import DEFAULT_PARAMS
+    from tests.ods_fixture import make_ods
+
+    rows = [["name", "value", "notes"]] + [[k, "ten" if k == "rooms" else str(v), n] for k, (v, n) in DEFAULT_PARAMS.items()]
+    make_ods(tmp_path / "balance.ods", {"Params": rows})
+    monkeypatch.chdir(tmp_path)
+    assert main(["simulate", "--runs", "5"]) == 2
+    err = capsys.readouterr().err
+    assert "error:" in err and "rooms" in err and "Traceback" not in err
+
+
+def test_cli_init_existing_file_is_an_error(tmp_path, monkeypatch, capsys):
+    (tmp_path / "balance.ods").write_text("x")
+    monkeypatch.chdir(tmp_path)
+    assert main(["init"]) == 2
+    assert "already exists" in capsys.readouterr().err

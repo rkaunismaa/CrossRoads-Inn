@@ -161,3 +161,32 @@ def test_dealt_columns_match_detects_param_change():
     assert dealt_columns_match(rows, d, P)
     changed = {**P, "pay_merchant": 9, "pay_soldier": 7, "pay_pilgrim": 2, "noble_offer": 7}
     assert not dealt_columns_match(rows, deal_run(changed, 5), changed)
+
+
+def test_blank_row_after_seed_still_finds_header():
+    rows = as_sheet(deal_to_rows(deal_run(P, 2), P))
+    set_cell(rows, find_row(rows, 1, 1), "decision", "accept")
+    rows.insert(1, [])
+    _, player, warnings = read_decisions(rows)
+    assert player.decisions == {(1, 1): "accept"} and warnings == []
+
+
+def test_missing_decision_column_raises():
+    rows = as_sheet(deal_to_rows(deal_run(P, 2), P))
+    rows[1] = [c for c in rows[1] if c != "decision"]
+    with pytest.raises(ValueError, match="decision"):
+        read_decisions(rows)
+
+
+def test_blank_decision_for_arrived_traveler_warns():
+    from inn_sim.handplay import blank_decision_warnings
+
+    d = deal_run(P, 2)
+    rows = as_sheet(deal_to_rows(d, P))
+    set_cell(rows, find_row(rows, 1, 1), "decision", "decline")
+    _, player, _ = read_decisions(rows)
+    result = play_run(P, d, player)
+    warnings = blank_decision_warnings(player)
+    arrived = sum("slot" in line for line in result.ledger)
+    assert len(warnings) == arrived - 1  # every arrived traveler except day 1 slot 1
+    assert f"row {find_row(rows, 1, 2) + 1}" in warnings[0] and "treated as decline" in warnings[0]

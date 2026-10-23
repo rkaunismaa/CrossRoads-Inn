@@ -81,6 +81,10 @@ class ParamError(ValueError):
     """A problem with the workbook or its Params sheet."""
 
 
+class WorkbookLocked(RuntimeError):
+    """The workbook is open in Calc (its lock file exists)."""
+
+
 def params_from_defaults() -> dict[str, float]:
     return {name: float(value) for name, (value, _note) in DEFAULT_PARAMS.items()}
 

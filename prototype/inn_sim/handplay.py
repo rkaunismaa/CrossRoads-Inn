@@ -56,8 +56,12 @@ def read_decisions(rows: list[list[str]]) -> tuple[int, ScriptedPlayer, list[str
     if seed_at is None:
         raise ValueError("HandPlay sheet has no seed=<n> row; deal a run first")
     seed = _int(rows[seed_at][0].split("=", 1)[1])
-    header = rows[seed_at + 1]
+    header_at = next((i for i in range(seed_at + 1, len(rows)) if "day" in rows[i] and "decision" in rows[i]), None)
+    header = rows[header_at] if header_at is not None else []
     col = {name: header.index(name) for name in HANDPLAY_HEADER if name in header}
+    missing = [name for name in ("day", "slot", "kind_shown", "decision") if name not in col]
+    if missing:
+        raise ValueError(f"HandPlay header row is missing column(s): {', '.join(missing)}")
 
     def cell(row: list[str], name: str) -> str:
         i = col.get(name)
@@ -65,8 +69,10 @@ def read_decisions(rows: list[list[str]]) -> tuple[int, ScriptedPlayer, list[str
 
     market: dict[int, tuple[int, int]] = {}
     decisions: dict[tuple[int, int], Action] = {}
+    sheet_rows: dict[tuple[int, int], int] = {}
+    already_warned: set[tuple[int, int]] = set()
     warnings: list[str] = []
-    for i in range(seed_at + 2, len(rows)):
+    for i in range(header_at + 1, len(rows)):
         row, sheet_row = rows[i], i + 1
         if not row or not cell(row, "day"):
             continue
@@ -75,6 +81,7 @@ def read_decisions(rows: list[list[str]]) -> tuple[int, ScriptedPlayer, list[str
         except ValueError:
             warnings.append(f"row {sheet_row}: day/slot not a number; row ignored")
             continue
+        sheet_rows[(day, slot)] = sheet_row
         for name in ("buy_food", "buy_firewood"):
             raw = cell(row, name)
             if not raw:
@@ -92,12 +99,23 @@ def read_decisions(rows: list[list[str]]) -> tuple[int, ScriptedPlayer, list[str
             continue
         if action not in ACTIONS:
             warnings.append(f"row {sheet_row}: unknown decision {raw!r}; treated as decline")
+            already_warned.add((day, slot))
         elif action.startswith("haggle") and cell(row, "kind_shown") != "noble":
             warnings.append(f"row {sheet_row}: {action} is only for nobles, not {cell(row, 'kind_shown')}; "
                             "treated as decline")
+            already_warned.add((day, slot))
         else:
             decisions[(day, slot)] = action  # type: ignore[assignment]
-    return seed, ScriptedPlayer(market, decisions), warnings
+    player = ScriptedPlayer(market, decisions)
+    player.sheet_rows = sheet_rows
+    player.already_warned = already_warned
+    return seed, player, warnings
+
+
+def blank_decision_warnings(player: ScriptedPlayer) -> list[str]:
+    """After a replay: travelers who really arrived but had a blank decision cell."""
+    return [f"row {player.sheet_rows.get(key, '?')}: no decision for day {key[0]} slot {key[1]}; "
+            "treated as decline" for key in player.defaulted if key not in player.already_warned]
 
 
 def dealt_columns_match(rows: list[list[str]], deal: RunDeal, params: dict[str, float]) -> bool:

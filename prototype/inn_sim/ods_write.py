@@ -15,16 +15,12 @@ from pathlib import Path
 import uno
 from com.sun.star.beans import PropertyValue
 
-from inn_sim.params import DEFAULT_PARAMS, ParamError, read_sheet
+from inn_sim.params import DEFAULT_PARAMS, ParamError, WorkbookLocked, read_sheet
 
 # com.sun.star.sheet.CellFlags: VALUE | DATETIME | STRING | ANNOTATION | FORMULA
 _CLEAR_FLAGS = 1 | 2 | 4 | 8 | 16
 _PARAMS_HEADER = ["name", "value", "notes"]
 _CONNECT_TIMEOUT = 30.0
-
-
-class WorkbookLocked(RuntimeError):
-    """The workbook is open in Calc (its lock file exists)."""
 
 
 def _prop(name: str, value: object) -> PropertyValue:

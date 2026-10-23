@@ -78,3 +78,9 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - Sensitivity: reversed the Task 6 "nudge whole numbers by ±1" decision with tests, because it falsely flagged a dozen params. Firewood amounts were added to the whole-number list.
   - One flag is left: raising the debt by 10% drops the careful player to 58.6%, against a 60% floor. Two adjustment attempts didn't fix it, and it looks built into the bar. It goes to the user.
   - Wrote `prototype/tuning-log.md` and updated `docs/design.md` (v0.2): rules, numbers, the lose condition, and news coming only from wanderers.
+- Final review by a fresh reviewer subagent. It found nothing critical and 5 important issues. The agent fixed 3 of them, each with a test that failed first:
+  - the CLI now prints `error: ...` instead of a traceback;
+  - a blank row after the seed row no longer silently drops every decision;
+  - a blank decision for a traveler who actually arrived now gets a warning with its row number.
+
+  93 tests passing. One finding was kept as a decision: goodwill isn't a hidden-info leak, because a player can work it out from what happened. One goes to the user: the hand-play sheet shows the whole week up front. Six minor findings were deferred.
