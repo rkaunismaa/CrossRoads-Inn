@@ -109,3 +109,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - `deal --daily` and `next` added to the CLI.
 - One test was wrong: it compared a lost run, which has no End line, and compared a list to a tuple. The agent fixed the test, not the code.
 - 104 tests passing. Tried it by hand on a copy of the workbook (seed 5, day 1, then `next`).
+
+### 11. "1" (merge locally)
+- Fast-forward merged `daily-deal` into `main`. 104 tests pass on `main`. Deleted the local branch, which was never pushed.
