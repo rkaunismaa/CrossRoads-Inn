@@ -58,3 +58,8 @@ Format: each session has a heading. Each step lists the user's request, then wha
 ### 6. "looks good"
 - The user approved the paper prototype spec, and its status was set to approved. Next the agent writes the implementation plan using the writing-plans skill.
 - Wrote the implementation plan `docs/superpowers/plans/2026-10-23-paper-prototype.md` using the writing-plans skill. It has 9 tasks: the params/ODS reader, dealing, day rules, night/final event, players, the simulation report and sensitivity check, the UNO workbook writer, hand-play dealing/replay, and a first tuning pass. It also fixes the rule model and first-guess parameter values. Checked the tools first: pytest 9 and python3-uno are present, along with LibreOffice 7.3.
+
+### 7. "native it is"
+- The user chose native execution: the agent builds all nine tasks itself in this session, and one reviewer checks everything at the end. Work happens on the branch `paper-prototype`.
+- Added a root `.gitignore` for the superpowers workspace and Python caches.
+- Task 1: the `prototype/inn_sim` package, `DEFAULT_PARAMS` (the first-guess numbers), and an `.ods` reader that uses only the standard library. A missing, unknown or non-numeric param gives an error naming it. 8 tests: watched them fail, then pass.
