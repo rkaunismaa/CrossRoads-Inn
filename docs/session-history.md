@@ -64,3 +64,4 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Added a root `.gitignore` for the superpowers workspace and Python caches.
 - Task 1: the `prototype/inn_sim` package, `DEFAULT_PARAMS` (the first-guess numbers), and an `.ods` reader that uses only the standard library. A missing, unknown or non-numeric param gives an error naming it. 8 tests: watched them fail, then pass.
 - Task 2: `model.py` holds the dealt-run data types, and `deal_run(params, seed)` rolls everything random up front. News is always true. 9 tests: watched them fail, then pass. Rulings: the news format, and the order rolls happen in.
+- Task 3: day rules covering upkeep, market buying, arrivals and serving each traveler, including the noble's haggling and walk-outs. Anything impossible, like no room, no food, or haggling with a non-noble, counts as a decline. 20 tests: watched them fail, then pass.

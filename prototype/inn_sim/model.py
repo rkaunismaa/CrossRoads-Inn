@@ -1,5 +1,5 @@
 """Plain data for a run. Dealt values are frozen; InnState changes as play goes."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 Kind = Literal["merchant", "pilgrim", "soldier", "noble", "wanderer"]
@@ -35,3 +35,39 @@ class RunDeal:
     seed: int
     days: tuple[DayDeal, ...]
     final_event: FinalEvent
+
+
+Action = Literal["accept", "decline", "haggle_mid", "haggle_high"]
+ACTIONS: tuple[Action, ...] = ("accept", "decline", "haggle_mid", "haggle_high")
+
+
+@dataclass
+class InnState:
+    coins: int
+    food: int
+    firewood: int
+    goodwill: int
+    occupied: int = 0
+    thieves_tonight: int = 0
+    walkout_yesterday: bool = False  # set by a walk-out; costs one arrival the next day
+    lost: bool = False
+    news: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class TravelerView:
+    """What the player may see: a thief shows as a merchant, and tiers stay hidden."""
+    kind_shown: Kind
+    hint: bool
+    offer: int
+    needs_room: bool
+    needs_meal: bool
+
+
+@dataclass(frozen=True)
+class DayView:
+    day: int
+    weather: Weather
+    price_food: int
+    price_firewood: int
+    arrivals: int
