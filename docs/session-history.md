@@ -54,3 +54,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - Option (c): the Python sim deals seeded runs into the sheet, and the user makes the decisions. The rules live only in Python.
   - Tuning is a mix: the agent finds a first set that meets the bar, then the user adjusts by feel.
 - Updated the spec to match. It now waits for the user's approval.
+
+### 6. "looks good"
+- The user approved the paper prototype spec, and its status was set to approved. Next the agent writes the implementation plan using the writing-plans skill.
