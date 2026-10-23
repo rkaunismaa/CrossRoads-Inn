@@ -172,3 +172,10 @@ Format: each session has a heading. Each step lists the user's request, then wha
 ### 1. "continue"
 - The user resumed the same Claude Code session (`ClaudeResume.txt` holds the resume command; it stays untracked).
 - The agent checked the state: `main` matches GitHub, and stages 1 and 2 are done. Two GPUs are available (RTX 4090 24 GB and RTX 2070 SUPER 8 GB). No ComfyUI install was found in the obvious places. Started stage 3 (generated 2D art) with a design conversation.
+
+### 2. "skip the questions and just start"
+- The agent's stated choices: run ComfyUI locally on the RTX 4090 with SDXL base 1.0 (CreativeML Open RAIL++-M, commercial use allowed); keep every image reproducible from `tools/comfyui/assets.json`, with a provenance file for the Steam AI disclosure; generate one backdrop plus framed portraits of the five traveler types and Bram (a thief uses the merchant portrait); fall back to grey boxes when art is missing.
+- Searched the machine: no ComfyUI and no model files. Cloned ComfyUI into `~/ComfyUI` (outside the repo) with its own Python 3.12 environment, installed PyTorch for CUDA 12.8, and started downloading SDXL base 1.0 (about 7 GB).
+- Built `tools/comfyui/` test-first: `comfy_client.py` (an SDXL text-to-image job sent to the ComfyUI API, using only the standard library) and `generate_assets.py` (generates the missing images from `assets.json` and writes `provenance.json`). 6 tests.
+- `assets.json` holds 7 images: the backdrop and portraits of the merchant, pilgrim, soldier, noble, wanderer and Bram. Bram's appearance is the agent's call (a weathered local man in a wool tunic); the design doc doesn't describe him.
+- Work happens on the branch `art-stage3`. Wrote 3 failing Godot tests: portraits match the traveler shown, Bram and the backdrop use their art, and the scene falls back to grey boxes when art is missing.
