@@ -118,3 +118,11 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 13. "why is there no readme.md ?" / "yes, write it and push"
 - There was none because neither CLAUDE.md nor any task asked for one. Wrote `README.md`: what the game is, status, folder layout, requirements, how to run the Godot tests, how to use the paper prototype including daily hand play, and how AI is used. Pushed to `main`.
+
+### 14. "start the grey-box Godot prototype"
+- Started a design conversation (brainstorming) for stage 2. The user asked the agent to propose options. The agent offered a browser tab of mockups, the user accepted, and the agent started the brainstorming visual companion server.
+- First screen: three layouts for a traveler's arrival: (A) a ledger desk, (B) the counter scene with speech bubbles, (C) a queue of travelers at the door.
+- The user said "you choose". The agent picked B, the counter scene, and borrowed C's "N more travelers today" count. Agent's reasons: B is closest to the final game, so stage 3 art (portraits, backdrop) drops straight in; and the count gives the same planning information the simulation's careful player uses.
+- Proposed five definitions of "stage 2 done". The user picked 1 (a full week you can play, rules in GDScript with GUT tests), 2 (the same ledger as the Python sim on exported fixtures) and 3 (Bram picks fixed lines from a facts object).
+- The agent described how it would build them, and the user said "looks right, write it up". Wrote the draft spec `docs/superpowers/specs/2026-10-23-greybox-godot-design.md` and sent a reviewer subagent to read it as a builder would.
+- The reviewer reported "nothing important left". The agent added three of its own calls to the spec: deliberately illegal-action fixtures, copying Python's round-half-to-even, and Bram's facts holding only what the player can see. The spec now waits for the user's approval.
