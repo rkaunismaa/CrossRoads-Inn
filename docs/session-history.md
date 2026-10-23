@@ -126,3 +126,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Proposed five definitions of "stage 2 done". The user picked 1 (a full week you can play, rules in GDScript with GUT tests), 2 (the same ledger as the Python sim on exported fixtures) and 3 (Bram picks fixed lines from a facts object).
 - The agent described how it would build them, and the user said "looks right, write it up". Wrote the draft spec `docs/superpowers/specs/2026-10-23-greybox-godot-design.md` and sent a reviewer subagent to read it as a builder would.
 - The reviewer reported "nothing important left". The agent added three of its own calls to the spec: deliberately illegal-action fixtures, copying Python's round-half-to-even, and Bram's facts holding only what the player can see. The spec now waits for the user's approval.
+
+### 15. "approved, write the plan"
+- The user approved the stage 2 spec. Stopped the mockup server; the mockups stay in `.superpowers/brainstorm/`, which git ignores. Next the agent writes the plan with the writing-plans skill.
