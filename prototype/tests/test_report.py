@@ -1,3 +1,5 @@
+import pytest
+
 import inn_sim.report as report
 from inn_sim.__main__ import main
 from inn_sim.params import params_from_defaults
@@ -34,11 +36,24 @@ def test_bar_edges_inclusive():
 
 def test_sensitivity_flags_breaking_param(monkeypatch):
     def fake(params, runs, seed):
-        win = 0.5 if params["upkeep"] == 4 else 0.75
+        win = 0.5 if params["debt"] == 66 else 0.75
         return {"careful": Stats(runs, win, 0, 0), "random": Stats(runs, 0, 0, 0)}
 
     monkeypatch.setattr(report, "simulate", fake)
-    assert sensitivity(P, 10, 0) == [("upkeep", 1.1, 0.5)]
+    assert sensitivity(P, 10, 0) == [("debt", 1.1, 0.5)]
+
+
+def test_small_whole_numbers_are_not_nudged(monkeypatch):
+    seen = []
+
+    def fake(params, runs, seed):
+        seen.append(params)
+        return {"careful": Stats(runs, 0.75, 0, 0), "random": Stats(runs, 0, 0, 0)}
+
+    monkeypatch.setattr(report, "simulate", fake)
+    sensitivity(P, 10, 0)
+    assert all(p["upkeep"] == 3 and p["food_per_meal"] == 1 for p in seen)  # 3*1.1 rounds back to 3
+    assert "upkeep" in report.untested_params(P) and "debt" not in report.untested_params(P)
 
 
 def test_sensitivity_skips_structural_params(monkeypatch):
@@ -67,3 +82,12 @@ def test_cli_simulate_writes_csv(tmp_path, monkeypatch):
     main(["simulate", "--runs", "20", "--csv", "runs.csv"])
     lines = (tmp_path / "runs.csv").read_text().splitlines()
     assert lines[0].startswith("seed,") and len(lines) == 21
+
+
+def test_fraction_friendly_params_are_nudged():
+    untested = report.untested_params(P)
+    for name in ("price_food", "price_firewood", "w_merchant", "w_wanderer",
+                 "pay_pilgrim", "robbery_safe_goodwill"):
+        assert name not in untested
+    assert report._nudge("price_food", 2, 1.1) == pytest.approx(2.2)
+    assert report._nudge("fire_base", 1, 1.1) == 1  # whole firewood, rounded up by the rules

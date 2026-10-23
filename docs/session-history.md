@@ -70,3 +70,11 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Task 6: the simulation report and CLI. `python3 -m inn_sim simulate` compares the careful and random players on the same deals and prints `BAR: PASS/FAIL` with the reasons, with an optional CSV. `sensitivity` nudges each number by ±10%. 66 tests passing. The first-guess numbers give `BAR: FAIL` (careful player wins 16%, median 32% below the target).
 - Task 7: the workbook writer. It starts a private headless LibreOffice with its own throwaway profile, edits only the named sheet, and refuses with "close the workbook in Calc first" if the file is open. `python3 -m inn_sim init` created `prototype/balance.ods` with the sheets `Params`, `HandPlay` and `Reveal`. 74 tests passing. The LibreOffice tests take about 15 s.
 - Task 8: hand play. `python3 -m inn_sim deal --seed N` writes the run into `HandPlay`, with nothing hidden shown, and the truth into `Reveal`. `replay` reads your decisions back, warns about bad cells by row number instead of crashing, warns if `Params` changed since the deal, and prints your ledger next to the careful player's result. 86 tests passing. Tried it on the real workbook with seed 1.
+- Task 9: the first tuning pass.
+  - Baseline: the careful player won 17%.
+  - Ablation: every source of randomness adds a little spread, and thieves cost the most.
+  - Changes: start coins 60, 2 rooms, debt 64, robbery 10%, thief theft 10%, thief chance 20%, goodwill pay bonus 0.02, `noble_high` 12.
+  - Result: `BAR: PASS` on seeds 0 and 1000 (careful player 77% wins, median 73, +14.1%; random player 0%).
+  - Sensitivity: reversed the Task 6 "nudge whole numbers by ±1" decision with tests, because it falsely flagged a dozen params. Firewood amounts were added to the whole-number list.
+  - One flag is left: raising the debt by 10% drops the careful player to 58.6%, against a 60% floor. Two adjustment attempts didn't fix it, and it looks built into the bar. It goes to the user.
+  - Wrote `prototype/tuning-log.md` and updated `docs/design.md` (v0.2): rules, numbers, the lose condition, and news coming only from wanderers.

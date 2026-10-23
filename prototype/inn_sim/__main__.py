@@ -42,7 +42,11 @@ def cmd_simulate(args: argparse.Namespace) -> int:
 
 
 def cmd_sensitivity(args: argparse.Namespace) -> int:
-    flagged = report.sensitivity(_params(args.ods), args.runs, args.seed)
+    params = _params(args.ods)
+    flagged = report.sensitivity(params, args.runs, args.seed)
+    untested = report.untested_params(params)
+    if untested:
+        print(f"not tested (whole numbers too small to move by 10%): {', '.join(untested)}")
     if not flagged:
         print("SENSITIVITY: PASS")
         return 0

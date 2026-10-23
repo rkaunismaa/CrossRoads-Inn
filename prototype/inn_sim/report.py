@@ -15,6 +15,11 @@ CAREFUL_MARGIN = (0.0, 0.15)
 RANDOM_WIN_BELOW = 0.20
 SENSITIVITY_BAND = (0.60, 0.90)
 SENSITIVITY_SKIP = {"days", "travelers_min", "travelers_max"}
+# Params the rules read as whole numbers (int()); all others can take fractions when nudged.
+WHOLE_PARAMS = {"fire_base", "fire_per_room", "start_coins", "start_food", "start_firewood", "start_goodwill", "upkeep", "rooms", "goodwill_cap",
+                "pilgrim_goodwill", "food_per_meal", "noble_offer", "noble_mid", "noble_high",
+                "walkout_goodwill_loss", "shortage_coin_per_unit", "shortage_goodwill", "hungry_soldiers_food",
+                "final_food_penalty"}
 PROBABILITIES = {"thief_p", "hint_accuracy", "hint_false_pos", "cheap_discount"} | {
     name for name in DEFAULT_PARAMS if name.startswith("p_") or name.endswith("_frac")}
 
@@ -63,16 +68,17 @@ def check_bar(stats: dict[str, Stats]) -> list[str]:
 
 
 def _nudge(name: str, value: float, factor: float) -> float:
-    if isinstance(DEFAULT_PARAMS[name][0], int):
-        # Whole numbers must actually move, or small values like upkeep 3 never get tested.
-        new = round(value * factor)
-        if new == value:
-            new = value + (1 if factor > 1 else -1)
-    else:
-        new = value * factor
+    # Whole numbers stay whole. A small one (upkeep 3) can't move by 10%, so it comes back unchanged.
+    new = round(value * factor) if name in WHOLE_PARAMS else value * factor
     if name in PROBABILITIES:
         new = min(1.0, new)
     return max(0.0, float(new))
+
+
+def untested_params(params: Params) -> list[str]:
+    """Params the +/-10% check can't move (small whole numbers), so the user knows they weren't covered."""
+    return [name for name in params if name not in SENSITIVITY_SKIP
+            and all(_nudge(name, params[name], f) == params[name] for f in (0.9, 1.1))]
 
 
 def sensitivity(params: Params, runs: int, seed: int) -> list[tuple[str, float, float]]:
