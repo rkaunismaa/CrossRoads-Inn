@@ -88,3 +88,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
 ### 8. "1" (merge locally)
 - Fast-forward merged `paper-prototype` into `main`. 93 tests pass on `main`. Deleted the local branch.
 - Left for the user to decide: pushing `main`, deleting the remote `paper-prototype` branch, the debt sensitivity gap, and whether the hand-play sheet should show the whole week up front.
+
+### 9. "push main and delete the remote branch"
+- Pushed `main` to GitHub and deleted the remote `paper-prototype` branch. Local `main` now matches `origin/main`.
