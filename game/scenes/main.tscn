@@ -10,12 +10,3 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
-
-[node name="StockLabel" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 616.0
-offset_bottom = 48.0
-text = "Coins: 0   Food: 0   Firewood: 0"

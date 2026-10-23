@@ -5,7 +5,7 @@ extends RefCounted
 ## Facts hold only what the player could know. Never: is_thief, noble_tier, goodwill, or a
 ## final event that hasn't been announced (news) or hasn't happened yet.
 ##
-## morning (after DayRunner.begin_day + buy):
+## morning (after DayRunner.begin_day; the UI asks before the player buys):
 ##   moment "morning", day int, weather String, travelers_coming int,
 ##   food_low bool              food < travelers_coming * food_per_meal
 ##   firewood_short_tonight bool firewood < fire_need(all rooms full, today's weather)
