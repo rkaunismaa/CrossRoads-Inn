@@ -115,3 +115,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 12. "sure" (push)
 - Pushed `main` to GitHub.
+
+### 13. "why is there no readme.md ?" / "yes, write it and push"
+- There was none because neither CLAUDE.md nor any task asked for one. Wrote `README.md`: what the game is, status, folder layout, requirements, how to run the Godot tests, how to use the paper prototype including daily hand play, and how AI is used. Pushed to `main`.

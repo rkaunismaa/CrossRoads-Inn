@@ -1,0 +1,69 @@
+# Crossroads Inn
+
+You run a tiny inn at a crossroads for 7 days. Each day, 3-5 travelers arrive wanting a room, a meal, or both. Merchants (some of them thieves), pilgrims, soldiers, haggling nobles and news-bearing wanderers all come through.
+
+You balance coins, food and firewood against the weather, pay the daily upkeep, and survive a final-night event. Then you pay the landlord's debt.
+
+This is a learning project. It studies the full AI-assisted game development workflow: concept, prototype, assets, runtime AI, and shipping. Every step is recorded in [`docs/session-history.md`](docs/session-history.md).
+
+## Status
+
+- **Stage 1, the paper prototype, is done.** The balance numbers are tuned. See [`prototype/tuning-log.md`](prototype/tuning-log.md).
+- **Stage 2, a grey-box Godot prototype, is next.** The project skeleton is in `game/`.
+
+## Layout
+
+| Path | What's there |
+|---|---|
+| `docs/design.md` | The design doc. It is the source of truth for gameplay. |
+| `docs/session-history.md` | A step-by-step record of every AI-assisted session. |
+| `docs/ai-log.md` | Short notes on what the AI did well or badly, and the time spent. |
+| `docs/superpowers/` | Specs and implementation plans. |
+| `prototype/` | The paper prototype: a Python simulation (`inn_sim`) and the `balance.ods` workbook. |
+| `game/` | The Godot 4 project, with GUT tests. |
+| `tools/` | Helper scripts, such as `run-tests.sh`. |
+
+## Requirements
+
+- Ubuntu Linux (other platforms are untested).
+- [Godot 4.7](https://godotengine.org/), run as `godot` on your `PATH`.
+- Python 3.10 or newer with `pytest`.
+- LibreOffice 7.3 or newer with the Python bridge (`python3-uno`). The simulation reads the workbook without it, but writing to the workbook and the hand-play commands need it.
+
+## Godot game
+
+```bash
+tools/run-tests.sh                 # GUT tests, headless
+godot --path game                  # open and run the grey-box scene
+```
+
+## Paper prototype
+
+All tunable numbers live on the `Params` sheet of `prototype/balance.ods`. The game rules live only in Python. Run everything from `prototype/`:
+
+```bash
+cd prototype
+python3 -m pytest -q                              # tests
+python3 -m inn_sim simulate --runs 5000           # careful vs random player, judged against the balance bar
+python3 -m inn_sim sensitivity                    # nudge each number by ±10% and flag fragile ones
+```
+
+### Play it by hand, one day at a time
+
+```bash
+python3 -m inn_sim deal --seed 5 --daily   # deals day 1 into the HandPlay sheet
+```
+
+1. Open `balance.ods` in LibreOffice Calc.
+2. Fill in `buy_food` and `buy_firewood` on the day's first row, and a `decision` for each traveler: `accept`, `decline`, `haggle_mid` or `haggle_high` (the last two are nobles only).
+3. Save and close Calc.
+4. Run `python3 -m inn_sim next`. It shows how the day went and then deals the next day.
+
+After day 7 you see your result next to the careful player's on the same run, and the `Reveal` sheet shows what was hidden.
+
+To deal the whole week at once instead, use `deal --seed 5`, fill in every day, then run `python3 -m inn_sim replay`.
+
+## How AI is used
+
+- The game was designed and built with Claude Code. See the session history.
+- At runtime, a small local LLM will voice Bram, the recurring NPC who chats with the player. It only phrases facts the game code supplies, and it never decides outcomes.
