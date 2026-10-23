@@ -187,3 +187,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 3. "1" (merge locally)
 - Merged `art-stage3` into `main`. On `main`, 79 GDScript tests, 111 Python tests and 6 art-tool tests pass. Deleted the local branch, which was never pushed. Stopped the ComfyUI server to free the GPU.
+
+### 4. "push it"
+- Pushed `main` to GitHub, including the stage 3 art.
