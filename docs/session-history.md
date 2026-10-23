@@ -151,3 +151,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - two of Bram's lines no longer hard-code balance numbers ("Day seven", "twice the wood").
 
   76 GDScript tests passing. Six minor findings were deferred.
+
+### 17. "1" (merge locally)
+- Merged `greybox-godot` into `main`. On `main`, 76 GDScript tests and 111 Python tests pass. Deleted the local branch, which was never pushed.
