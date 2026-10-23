@@ -52,6 +52,14 @@ def cmd_sensitivity(args: argparse.Namespace) -> int:
     return 1
 
 
+def cmd_init(args: argparse.Namespace) -> int:
+    from inn_sim.ods_write import create_workbook
+
+    create_workbook(Path(args.ods))
+    print(f"created {args.ods} with Params, HandPlay and Reveal sheets")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="inn_sim", description="Crossroads Inn paper-prototype simulation")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -68,6 +76,10 @@ def build_parser() -> argparse.ArgumentParser:
     sens.add_argument("--runs", type=int, default=2000)
     sens.add_argument("--seed", type=int, default=0)
     sens.set_defaults(func=cmd_sensitivity)
+
+    init = sub.add_parser("init", help="create balance.ods from DEFAULT_PARAMS (never overwrites)")
+    init.add_argument("--ods", default="balance.ods")
+    init.set_defaults(func=cmd_init)
     return parser
 
 
