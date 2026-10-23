@@ -84,3 +84,7 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - a blank decision for a traveler who actually arrived now gets a warning with its row number.
 
   93 tests passing. One finding was kept as a decision: goodwill isn't a hidden-info leak, because a player can work it out from what happened. One goes to the user: the hand-play sheet shows the whole week up front. Six minor findings were deferred.
+
+### 8. "1" (merge locally)
+- Fast-forward merged `paper-prototype` into `main`. 93 tests pass on `main`. Deleted the local branch.
+- Left for the user to decide: pushing `main`, deleting the remote `paper-prototype` branch, the debt sensitivity gap, and whether the hand-play sheet should show the whole week up front.
