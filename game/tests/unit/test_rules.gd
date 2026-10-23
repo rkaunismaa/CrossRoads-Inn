@@ -154,3 +154,55 @@ func test_describe_news() -> void:
 	assert_eq(InnRules.describe_news("cheap:5"), "firewood is cheap on day 5")
 	assert_eq(InnRules.describe_news("cheap:none"), "no cheap firewood days ahead")
 	assert_eq(InnRules.describe_news("final:hungry_soldiers"), "the final night brings: hungry soldiers")
+
+
+# --- night ---
+
+func test_fire_need() -> void:
+	assert_eq(InnRules.fire_need(2, "cold", P), 5)
+	assert_eq(InnRules.fire_need(2, "snow", P, true), 12)
+	assert_eq(InnRules.fire_need(0, "normal", P), 1)
+
+
+func test_shortage_costs_coins_and_goodwill() -> void:
+	s.occupied = 2; s.firewood = 1
+	InnRules.night(s, D.day(), P, "")
+	assert_eq([s.firewood, s.coins, s.goodwill], [0, 16, 0])
+
+
+func test_shortage_never_makes_coins_negative() -> void:
+	s.occupied = 3; s.firewood = 0; s.coins = 1
+	InnRules.night(s, D.day(), P, "")
+	assert_eq(s.coins, 0)
+
+
+func test_thief_steals_after_fire() -> void:
+	s.thieves_tonight = 1
+	assert_eq(InnRules.night(s, D.day(), P, ""), "burned 1 firewood, thief stole 6")
+	assert_eq([s.coins, s.firewood], [14, 7])
+
+
+func test_night_frees_rooms_and_thieves() -> void:
+	s.occupied = 2; s.thieves_tonight = 1
+	InnRules.night(s, D.day(), P, "")
+	assert_eq([s.occupied, s.thieves_tonight], [0, 0])
+
+
+func test_hungry_soldiers_shortfall_penalty() -> void:
+	s.food = 2
+	assert_string_contains(InnRules.night(s, D.day(), P, "hungry_soldiers"), "hungry soldiers, 4 food short")
+	assert_eq([s.food, s.coins], [0, 8])
+
+
+func test_robbery_blocked_by_goodwill() -> void:
+	s.goodwill = 4
+	assert_string_contains(InnRules.night(s, D.day(), P, "robbery"), "robbery stopped by goodwill")
+	assert_eq(s.coins, 20)
+	s.goodwill = 3
+	assert_string_contains(InnRules.night(s, D.day(), P, "robbery"), "robbery took 8")
+	assert_eq(s.coins, 12)
+
+
+func test_blizzard_doubles_fire() -> void:
+	assert_eq(InnRules.night(s, D.day(), P, "blizzard"), "burned 2 firewood, blizzard")
+	assert_eq(s.firewood, 6)

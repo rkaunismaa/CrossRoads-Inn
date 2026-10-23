@@ -137,3 +137,47 @@ static func serve(s: InnState, t: DealtTraveler, action: String, p: Dictionary) 
 		s.news.append(t.news)
 		return "accepted +%d, news: %s" % [pay, describe_news(t.news)]
 	return "accepted +%d" % pay
+
+
+static func fire_need(occupied: int, weather: String, p: Dictionary, blizzard := false) -> int:
+	var mult: float = {"normal": 1.0, "cold": p.mult_cold, "snow": p.mult_snow}[weather]
+	if blizzard:
+		mult *= p.blizzard_mult
+	return ceili((p.fire_base + p.fire_per_room * occupied) * mult)
+
+
+## Burn firewood, let thieves steal, then apply the final-night event (final_event "" for none).
+static func night(s: InnState, day: DayDeal, p: Dictionary, final_event: String) -> String:
+	var notes: PackedStringArray = []
+	var need := fire_need(s.occupied, day.weather, p, final_event == "blizzard")
+	if s.firewood >= need:
+		s.firewood -= need
+		notes.append("burned %d firewood" % need)
+	else:
+		var deficit := need - s.firewood
+		s.firewood = 0
+		s.coins = maxi(0, s.coins - deficit * int(p.shortage_coin_per_unit))
+		_add_goodwill(s, -int(p.shortage_goodwill), p)
+		notes.append("short %d firewood" % deficit)
+	for i in s.thieves_tonight:
+		var stolen := floori(s.coins * p.thief_steal_frac)
+		s.coins -= stolen
+		notes.append("thief stole %d" % stolen)
+	if final_event == "hungry_soldiers":
+		var want := int(p.hungry_soldiers_food)
+		var short := maxi(0, want - s.food)
+		s.food = maxi(0, s.food - want)
+		s.coins = maxi(0, s.coins - short * int(p.final_food_penalty))
+		notes.append("hungry soldiers, %d food short" % short)
+	elif final_event == "robbery":
+		if s.goodwill >= p.robbery_safe_goodwill:
+			notes.append("robbery stopped by goodwill")
+		else:
+			var taken := floori(s.coins * p.robbery_frac)
+			s.coins -= taken
+			notes.append("robbery took %d" % taken)
+	elif final_event == "blizzard":
+		notes.append("blizzard")
+	s.occupied = 0
+	s.thieves_tonight = 0
+	return ", ".join(notes)
