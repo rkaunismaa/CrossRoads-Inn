@@ -41,4 +41,16 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Decisions from the user so far:
   - Format: first a spreadsheet, then a script that simulates many runs.
   - Target feel: tight. Most runs should end barely above the coin target.
-- The user also asked for this running history file. The agent created it and will keep it up to date.
+- The user also asked for this running history file. The agent created it and will keep it up to date (commit `e372ea6`, pushed).
+- Tools: LibreOffice Calc for the spreadsheet and Python for the simulation.
+- The user asked the agent to propose dilemmas. The agent offered five: the cold-night soldier, the thief disguised as a merchant, the hungry pilgrim (goodwill), the haggling noble (reputation), and the wanderer who pays in news. The user kept all five as written.
+- The agent played back its understanding. The user confirmed every guess: a village market for buying food and firewood, a hidden goodwill/reputation stat, daily weather (normal, cold, snow), the merchant as the honest twin of the thief, and a simulation that compares a rule-based "careful player" against a random baseline.
+- Debts (confirmed): a fixed landlord debt is due the morning after day 7 and equals the coin target. There is also a small daily upkeep due each morning. Missing either payment ends the run.
+- Final-night event (confirmed): on night 7 one of a few events happens: a blizzard (double firewood), hungry soldiers (lots of food), or a robbery (coins lost unless goodwill is high). Wanderer news can warn of it.
+- What "tight" means (confirmed): the careful player wins 70-80% of runs with a median ending 0-15% above the target, and the random player wins under 20%.
+- The agent sized this as a project that needs a written design doc, and started writing it.
+- Wrote the draft spec `docs/superpowers/specs/2026-10-23-paper-prototype-design.md`. A reviewer subagent read it as a builder would and raised four gaps. The agent settled two itself (a ±10% sensitivity check, and what counts as an instant loss) and took two to the user: whether the spreadsheet works out results or is a ledger, and who tunes the numbers.
+- User's answers:
+  - Option (c): the Python sim deals seeded runs into the sheet, and the user makes the decisions. The rules live only in Python.
+  - Tuning is a mix: the agent finds a first set that meets the bar, then the user adjusts by feel.
+- Updated the spec to match. It now waits for the user's approval.
