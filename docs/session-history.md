@@ -157,3 +157,10 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 18. "yes" (push)
 - Pushed `main` to GitHub, including stage 2.
+
+### 19. "gonna bail for now and will continue later"
+- Session paused. State: stages 1 and 2 are done and on `main`. Next up is stage 3, generated 2D art (portraits and a backdrop via ComfyUI).
+- Open items for the user:
+  - the debt ×1.1 sensitivity gap (`prototype/tuning-log.md`);
+  - whether a week netting about +4 coins feels good in play;
+  - six deferred minor findings from the stage 2 review, listed under step 17's review notes and in the AI log.
