@@ -164,3 +164,11 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - the debt ×1.1 sensitivity gap (`prototype/tuning-log.md`);
   - whether a week netting about +4 coins feels good in play;
   - six deferred minor findings from the stage 2 review, listed under step 17's review notes and in the AI log.
+
+---
+
+## Session 2 - 2026-10-23 (resumed)
+
+### 1. "continue"
+- The user resumed the same Claude Code session (`ClaudeResume.txt` holds the resume command; it stays untracked).
+- The agent checked the state: `main` matches GitHub, and stages 1 and 2 are done. Two GPUs are available (RTX 4090 24 GB and RTX 2070 SUPER 8 GB). No ComfyUI install was found in the obvious places. Started stage 3 (generated 2D art) with a design conversation.
