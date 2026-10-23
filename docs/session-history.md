@@ -129,3 +129,4 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 15. "approved, write the plan"
 - The user approved the stage 2 spec. Stopped the mockup server; the mockups stay in `.superpowers/brainstorm/`, which git ignores. Next the agent writes the plan with the writing-plans skill.
+- Wrote the stage 2 implementation plan `docs/superpowers/plans/2026-10-23-greybox-godot.md`. It has 9 tasks: export params, export parity fixtures, GDScript params and model, day rules, night + `DayRunner` + parity test, dealing, Bram's facts and lines, the counter UI, and docs. Self-review fixed the test-default values and a made-up description of Bram.
