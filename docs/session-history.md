@@ -230,3 +230,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - **Eval:** replies in the model-alone run are now checked against the clean facts; success detection is better (French, copied phrases); the cold start is measured; and the docs say plainly that the schema is what blocks injections.
 - The new live eval first rejected 3 good lines ("won't" matched "won"). A failing test reproduced it, then the rule was fixed. Final live eval: 256/256 lines OK, 0/30 injections with the schema, 2/30 with the model alone, and a cold start of 4.1 s.
 - Deferred minors: a stray comment in `main.gd`; `pending_bram_id` not cleared on the error/end screens; superseded requests not cancelled; no character cap and the 25 vs 30 word mismatch; the schema copies the word lists rather than reading the Dealer constants; and one bad news item would disable later mornings' LLM lines.
+
+### 5. "1" (merge locally)
+- Merged `bram-llm` into `main`. On `main`, 106 GDScript tests, 111 Python tests and 6 art-tool tests pass. Deleted the local branch, which was never pushed.
