@@ -47,3 +47,13 @@ Short notes on what the agent did, what was fixed by hand, and rough time spent.
 - Review by eye: the first batch had a backdrop with white unfinished edges, a noble with an ornate frame and an off-style look, and a wanderer who looked too much like Bram. The agent changed seeds and prompts and regenerated, then regenerated the rest so `assets.json` reproduces every image exactly.
 - Screenshots of the real scene showed white text was hard to read over the painting. The agent added dark backing panels and hid empty bubbles.
 - Fixed by hand: nothing. Time: about 45 minutes, plus about 25 minutes downloading the model.
+
+## 2026-10-23 - Bram's local-LLM dialogue (stage 5)
+- Agent: the user skipped the questions.
+  - Model: the agent picked Qwen3-4B through the already-installed Ollama.
+  - Throwaway spikes found a problem and a fix. The plain `qwen3:4b` tag always writes its reasoning out loud, even with `think: false`, so the agent switched to `qwen3:4b-instruct` (Apache 2.0). Giving the model a code-chosen goal plus Bram's fixed lines as voice examples made its lines usable.
+  - Built test-first: `BramVoice` (prompt, reply checks, fact schema), `BramLLM` (non-blocking Ollama client that fails quietly), scene wiring (fixed line first, the LLM line swaps in for the same moment only), and `game/tools/bram_eval.gd`. 101 GDScript tests, plus one opt-in live test.
+- Evaluation against the live model: 256/256 lines passed the checks, at a median of about 120 ms.
+- Prompt injection: the first run let 2 of 30 injections through ("Arrr"). The agent added a strict fact schema so outside text never reaches the model, and after that 0 of 30 got through. The model alone (schema off) still lets about 3 of 30 through, which is recorded in `docs/bram-eval.md`.
+- Slip: the agent wrote "a regular" for Bram in a spike prompt again, and caught it before it reached the real prompt.
+- Fixed by hand: nothing. Time: about 1 hour, plus about 13 minutes of model downloads.

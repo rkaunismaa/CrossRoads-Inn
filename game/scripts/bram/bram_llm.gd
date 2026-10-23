@@ -13,6 +13,7 @@ var model := ""
 var timeout_s := 4.0
 var temperature := 0.9
 var max_words := 30
+var check_facts := true  ## only game/tools/bram_eval.gd turns this off, to measure the model on its own
 
 var _next_id := 1
 
@@ -40,6 +41,10 @@ func ask(facts: Dictionary, situation: String, examples: Array) -> int:
 		return -1
 	var id := _next_id
 	_next_id += 1
+	var checked := BramVoice.check_facts(facts) if check_facts else {"ok": true}
+	if not checked.ok:
+		line_failed.emit.call_deferred(id, "facts failed the check: " + checked.reason)
+		return id
 	var http := HTTPRequest.new()
 	http.timeout = timeout_s
 	add_child(http)

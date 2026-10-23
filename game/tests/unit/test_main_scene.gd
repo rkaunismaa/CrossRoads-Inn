@@ -168,3 +168,31 @@ func test_missing_art_falls_back_to_grey_boxes() -> void:
 	_node("OpenDoors").pressed.emit()
 	if _node("CounterPanel").visible:
 		assert_false(_node("TravelerPortrait").visible)
+
+
+# --- Bram's LLM voice (stage 5) ---
+
+func test_bram_shows_fixed_line_without_llm() -> void:
+	# Unit tests run with CROSSROADS_LLM=off: the fixed line is all there is.
+	assert_eq(main.pending_bram_id, -1)
+	assert_ne(_node("BramBubble").text, "")
+
+
+func test_llm_line_replaces_fixed_line() -> void:
+	main.pending_bram_id = 42
+	main.llm.line_ready.emit(42, "Mind the merchant's purse, friend.")
+	assert_eq(_node("BramBubble").text, "Mind the merchant's purse, friend.")
+
+
+func test_stale_llm_line_is_ignored() -> void:
+	var fixed: String = _node("BramBubble").text
+	main.pending_bram_id = 42
+	main.llm.line_ready.emit(41, "A line for a moment that has passed.")
+	assert_eq(_node("BramBubble").text, fixed)
+
+
+func test_new_moment_drops_the_pending_reply() -> void:
+	main.pending_bram_id = 42
+	_node("OpenDoors").pressed.emit()
+	main.llm.line_ready.emit(42, "Too late now.")
+	assert_ne(_node("BramBubble").text, "Too late now.")

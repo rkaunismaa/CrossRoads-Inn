@@ -38,17 +38,21 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 - Win: the morning after day 7, pay the landlord's debt (the coin target, currently 64).
 - Lose only by failing to pay: the daily upkeep (currently 3) or the final debt. Bad events and shortages cost coins or goodwill. A final-night event that "goes badly" is one that leaves you unable to pay.
 
-## Bram (runtime AI, later stage)
-- Game code produces a facts object (e.g. food low, stranger hostile, day number).
-- A local 3-4B model turns facts into one or two lines of dialogue.
-- The model never changes game state. Test with prompt injection.
+## Bram (runtime AI)
+- Game code produces a facts object holding only what the player could know (`game/scripts/bram/bram_facts.gd`). The code also decides what Bram talks about: the situation, such as "warn about this merchant".
+- A local 4B model (Qwen3-4B Instruct, Apache 2.0, run by Ollama) phrases that as one short line. Bram's fixed lines are given as examples of his voice.
+- The fixed line shows at once. The LLM line replaces it only if it arrives for the same moment and passes the checks. If Ollama isn't running, Bram simply keeps his fixed lines.
+- There are two safety layers:
+  - **Before the model:** facts must match a strict schema (known keys, types and words), so outside text can't reach the model.
+  - **After the model:** replies are rejected if they are too long, invent numbers, break character, claim certainty about a thief, or mention things not in the facts.
+- The model never changes game state. Prompt injection is tested by `game/tools/bram_eval.gd`, and the results are in `docs/bram-eval.md`.
 
 ## Build stages
 1. Paper prototype: LibreOffice spreadsheet plus a Python simulation, in `prototype/` (see `prototype/tuning-log.md`). Done.
 2. Grey-box Godot prototype with text labels. Done (see below).
 3. Generated 2D art (portraits, backdrop) via ComfyUI. Done: a painted inn backdrop and portraits of the five traveler types and Bram, made with SDXL base 1.0 on a local ComfyUI. See `tools/comfyui/` and `game/art/provenance.json`.
 4. Optional: one 3D prop via image-to-3D, cleaned in Blender, rendered to a sprite.
-5. Local-LLM dialogue for Bram.
+5. Local-LLM dialogue for Bram. Done (see Bram above).
 6. Linux export and Steam AI-disclosure review.
 
 ## Grey-box (stage 2)

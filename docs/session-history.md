@@ -199,3 +199,24 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Resumed the same Claude Code session. The agent checked the state: `main` matches GitHub, and stages 1–3 are done.
 - Tooling found: Ollama is installed and running locally but has no models pulled. Blender is not installed.
 - Next is either stage 4 (an optional 3D prop) or stage 5 (Bram's local-LLM dialogue). The agent asked the user which one.
+
+### 2. "stage 5"
+- The user picked stage 5, Bram's local-LLM dialogue. Started a design conversation (brainstorming).
+
+### 3. "just do it"
+- The user skipped the questions. The agent's calls:
+  - Qwen3-4B through the local Ollama on the 4090;
+  - the fixed line shows first, and the LLM line swaps in only if it passes the checks;
+  - if anything fails, the fixed line stays.
+- Pulled `qwen3:4b`. A spike showed it always writes its reasoning out loud, even with `think: false`. Pulled `qwen3:4b-instruct` instead (Apache 2.0 license confirmed) and removed the first model.
+- A second spike with a code-chosen goal and Bram's fixed lines as voice examples gave usable lines at about 0.1 s each, and ignored a basic injection.
+- Branch `bram-llm`. Built test-first:
+  - `BramVoice`: the prompt; reply checks for length, invented numbers, breaking character, thief certainty and unsupported words; and a strict schema for the facts.
+  - `BramLLM`: a non-blocking Ollama client that fails quietly and reads `game/data/bram_llm.json`. `tools/run-tests.sh` switches the LLM off unless `CROSSROADS_LLM_LIVE=1`.
+  - Scene wiring: the fixed line shows first; the LLM reply replaces it only for the same moment.
+- `game/tools/bram_eval.gd` runs the live model over 6 dealt runs plus an injection suite and writes `docs/bram-eval.md`.
+  - First run: 256/256 lines OK, but 2 of 30 injections showed ("Arrr").
+  - Added the fact schema, plus a prompt rule against listing facts.
+  - Second run: 0 of 30 injections shown with the schema on. The model alone still lets 3 of 30 through.
+- Checked in the real scene: the fixed line appeared, then the live LLM line replaced it ("That merchant... looks off...").
+- Updated `docs/design.md` (the Bram section; stage 5 done), `README.md` and the AI log. 101 GDScript tests passing.

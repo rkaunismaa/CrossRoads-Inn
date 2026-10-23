@@ -11,7 +11,8 @@ This is a learning project. It studies the full AI-assisted game development wor
 - **Stage 1, the paper prototype, is done.** The balance numbers are tuned. See [`prototype/tuning-log.md`](prototype/tuning-log.md).
 - **Stage 2, the grey-box Godot prototype, is done.** You can play a full week. Its rules match the simulation exactly, and Bram speaks fixed lines.
 - **Stage 3, generated 2D art, is done.** A painted backdrop and portraits, made locally with SDXL in ComfyUI. Every image is reproducible from `tools/comfyui/assets.json`.
-- **Stage 4, an optional 3D prop, or stage 5, Bram's local-LLM dialogue, is next.**
+- **Stage 5, Bram's local-LLM dialogue, is done.** A local Qwen3-4B phrases his lines from game facts, behind two safety layers. See [`docs/bram-eval.md`](docs/bram-eval.md).
+- **Stage 4, an optional 3D prop, or stage 6, Linux export and the Steam AI-disclosure review, is next.**
 
 ## Layout
 
@@ -31,6 +32,7 @@ This is a learning project. It studies the full AI-assisted game development wor
 - Ubuntu Linux (other platforms are untested).
 - [Godot 4.7](https://godotengine.org/), run as `godot` on your `PATH`.
 - Python 3.10 or newer with `pytest`.
+- Optional: [Ollama](https://ollama.com/) with `ollama pull qwen3:4b-instruct`, for Bram's LLM dialogue. Without it, Bram uses his fixed lines.
 - LibreOffice 7.3 or newer with the Python bridge (`python3-uno`). The simulation reads the workbook without it, but writing to the workbook and the hand-play commands need it.
 
 ## Godot game
@@ -45,6 +47,13 @@ godot --path game                  # play the grey-box game
 2. Travelers come to the counter one at a time. **Accept** or **Decline** them. Nobles can also be haggled with. A greyed-out button shows why when you hover over it.
 3. After the night summary, press **Continue**.
 4. After day 7, you either pay the landlord or you don't.
+
+**Bram's LLM.** Settings are in `game/data/bram_llm.json`; set `"enabled": false` to turn it off. Evaluate it against the real model (Ollama running) with:
+
+```bash
+godot --headless --path game --script res://tools/bram_eval.gd   # writes docs/bram-eval.md
+CROSSROADS_LLM_LIVE=1 tools/run-tests.sh                        # includes the one live-model test
+```
 
 **After re-tuning `balance.ods`**, regenerate what the game uses:
 
@@ -86,4 +95,4 @@ To deal the whole week at once instead, use `deal --seed 5`, fill in every day, 
 
 - The game was designed and built with Claude Code. See the session history.
 - All art is AI-generated with Stable Diffusion XL base 1.0 (CreativeML Open RAIL++-M license) on a local ComfyUI. Prompts and seeds are recorded in `game/art/provenance.json`.
-- At runtime, a small local LLM will voice Bram, the recurring NPC who chats with the player. It only phrases facts the game code supplies, and it never decides outcomes.
+- At runtime, a small local LLM (Qwen3-4B Instruct via Ollama, Apache 2.0) voices Bram, the recurring NPC who chats with the player. It only phrases facts the game code supplies, and it never decides outcomes.

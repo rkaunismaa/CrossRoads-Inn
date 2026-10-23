@@ -123,7 +123,18 @@ static func situation_for(facts: Dictionary) -> String:
 
 func line_for(facts: Dictionary) -> String:
 	var options: Array = LINES[situation_for(facts)]
-	var line: String = options[_rng.randi_range(0, options.size() - 1)]
+	return _fill(options[_rng.randi_range(0, options.size() - 1)], facts)
+
+
+## All of this situation's fixed lines, filled in: the LLM uses them as examples of Bram's voice.
+static func examples_for(facts: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	for line: String in LINES[situation_for(facts)]:
+		out.append(_fill(line, facts))
+	return out
+
+
+static func _fill(line: String, facts: Dictionary) -> String:
 	var fill := facts.duplicate()
 	if fill.has("final_event"):
 		fill.final_event = str(fill.final_event).replace("_", " ")
