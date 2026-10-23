@@ -16,5 +16,7 @@ A small top-down 2D resource-management game, built as a learning project to stu
 
 ## Layout (planned)
 - `docs/` design doc and AI log
-- `game/` Godot project
+- `game/` Godot project: `scripts/rules/` (game rules, no nodes), `scripts/bram/` (Bram's facts and lines), `scenes/` (UI only)
+- `game/data/params.json` and `game/tests/fixtures/` are generated from `prototype/` (`python3 -m inn_sim export` / `export-fixtures`); never edit them by hand
+- `prototype/` Python simulation and `balance.ods` (the source of truth for balance numbers)
 - `tools/` helper scripts (Blender headless export, ComfyUI API wrapper)

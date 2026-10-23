@@ -9,7 +9,8 @@ This is a learning project. It studies the full AI-assisted game development wor
 ## Status
 
 - **Stage 1, the paper prototype, is done.** The balance numbers are tuned. See [`prototype/tuning-log.md`](prototype/tuning-log.md).
-- **Stage 2, a grey-box Godot prototype, is next.** The project skeleton is in `game/`.
+- **Stage 2, the grey-box Godot prototype, is done.** You can play a full week. Its rules match the simulation exactly, and Bram speaks fixed lines.
+- **Stage 3, generated 2D art, is next.**
 
 ## Layout
 
@@ -33,9 +34,25 @@ This is a learning project. It studies the full AI-assisted game development wor
 ## Godot game
 
 ```bash
-tools/run-tests.sh                 # GUT tests, headless
-godot --path game                  # open and run the grey-box scene
+tools/run-tests.sh                 # GUT tests, headless (fails on any script error)
+godot --path game                  # play the grey-box game
 ```
+
+**How to play.**
+1. Each morning, buy food and firewood, then press **Open the doors**.
+2. Travelers come to the counter one at a time. **Accept** or **Decline** them. Nobles can also be haggled with. A greyed-out button shows why when you hover over it.
+3. After the night summary, press **Continue**.
+4. After day 7, you either pay the landlord or you don't.
+
+**After re-tuning `balance.ods`**, regenerate what the game uses:
+
+```bash
+cd prototype
+python3 -m inn_sim export            # game/data/params.json
+python3 -m inn_sim export-fixtures   # game/tests/fixtures/ (Python ledgers the GDScript rules must match)
+```
+
+The Python tests fail if either is out of date.
 
 ## Paper prototype
 

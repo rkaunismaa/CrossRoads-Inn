@@ -21,3 +21,19 @@ Short notes on what the agent did, what was fixed by hand, and rough time spent.
 - Fixed by the agent: one wrong test (it compared a lost run's ledger against a winning run's shape).
 - Fixed by hand: nothing.
 - Time: about 20 minutes.
+
+## 2026-10-23 - Grey-box Godot prototype (stage 2)
+- Agent: did the design conversation with browser mockups (the agent picked the counter layout when asked), wrote the spec (a reviewer found nothing to add) and a 9-task plan, then built it inline test-first. That covered:
+  - Python exporters for the params and 20 parity fixtures;
+  - a GDScript port of the rules and dealing, plus `DayRunner`;
+  - Bram's facts and fixed lines;
+  - the counter UI, built in code.
+
+  The result is 72 GDScript tests and 111 Python tests.
+- What worked: the parity test passed on all 20 fixtures first time, and a deliberate mutation proved it can fail. Rendering screenshots of the real scene found a bug the tests missed (the night showed the next day's number).
+- What went wrong and was fixed by the agent:
+  - GUT silently skipped test files that didn't parse and still reported a pass. `run-tests.sh` now fails on script errors.
+  - A few GDScript type-inference compile errors.
+  - The agent twice wrote an invented description of Bram, once in the plan and once in a code comment, and corrected both to the design doc's wording.
+- Fixed by hand: nothing.
+- Time: about 1.5 hours of agent time.

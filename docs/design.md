@@ -44,12 +44,18 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 - The model never changes game state. Test with prompt injection.
 
 ## Build stages
-1. Paper prototype: LibreOffice spreadsheet plus a Python simulation, in `prototype/` (see `prototype/tuning-log.md`).
-2. Grey-box Godot prototype with text labels.
+1. Paper prototype: LibreOffice spreadsheet plus a Python simulation, in `prototype/` (see `prototype/tuning-log.md`). Done.
+2. Grey-box Godot prototype with text labels. Done (see below).
 3. Generated 2D art (portraits, backdrop) via ComfyUI.
 4. Optional: one 3D prop via image-to-3D, cleaned in Blender, rendered to a sprite.
 5. Local-LLM dialogue for Bram.
 6. Linux export and Steam AI-disclosure review.
+
+## Grey-box (stage 2)
+- One screen in the counter layout. The traveler comes in from the door with a speech bubble, Bram stands beside the counter with his own, and the stock sits in a top bar with "N more travelers today".
+- Each day runs morning market, then travelers one at a time (Accept, Decline, and Haggle for nobles), then a night summary. After day 7 comes the end screen and "Play again".
+- The rules are a GDScript port of the Python simulation. They reproduce its ledgers exactly on exported test runs. The numbers come from `game/data/params.json`, exported from `balance.ods`.
+- Bram picks fixed lines from a facts object that holds only what the player could know. Stage 5 swaps in a local LLM that reads the same facts.
 
 ## Balance (first pass, 2026-10-23)
 All numbers live on the `Params` sheet of `prototype/balance.ods`, which is the source of truth. The key ones: start with 60 coins, 10 food and 8 firewood; 2 rooms; upkeep 3; debt 64.
