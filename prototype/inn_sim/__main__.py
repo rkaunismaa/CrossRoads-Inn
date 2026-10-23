@@ -166,6 +166,14 @@ def cmd_replay(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export(args: argparse.Namespace) -> int:
+    from inn_sim.export import export_params
+
+    export_params(load_params(Path(args.ods)), Path(args.out))
+    print(f"wrote {args.out} from {args.ods}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="inn_sim", description="Crossroads Inn paper-prototype simulation")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -200,6 +208,11 @@ def build_parser() -> argparse.ArgumentParser:
     nxt = sub.add_parser("next", help="daily mode: show how today went, then deal the next day")
     nxt.add_argument("--ods", default="balance.ods")
     nxt.set_defaults(func=cmd_next)
+
+    exp = sub.add_parser("export", help="write the Params sheet to the Godot game as JSON")
+    exp.add_argument("--ods", default="balance.ods")
+    exp.add_argument("--out", default="../game/data/params.json")
+    exp.set_defaults(func=cmd_export)
     return parser
 
 

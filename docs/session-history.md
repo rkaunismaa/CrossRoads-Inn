@@ -130,3 +130,7 @@ Format: each session has a heading. Each step lists the user's request, then wha
 ### 15. "approved, write the plan"
 - The user approved the stage 2 spec. Stopped the mockup server; the mockups stay in `.superpowers/brainstorm/`, which git ignores. Next the agent writes the plan with the writing-plans skill.
 - Wrote the stage 2 implementation plan `docs/superpowers/plans/2026-10-23-greybox-godot.md`. It has 9 tasks: export params, export parity fixtures, GDScript params and model, day rules, night + `DayRunner` + parity test, dealing, Bram's facts and lines, the counter UI, and docs. Self-review fixed the test-default values and a made-up description of Bram.
+
+### 16. "lets go native"
+- The user chose native execution for stage 2. Work happens on the branch `greybox-godot`.
+- Task 1: `python3 -m inn_sim export` writes `game/data/params.json` from `balance.ods`, with whole numbers written as ints. A test fails if the file is stale. 106 Python tests passing.
