@@ -1,5 +1,10 @@
 """The game rules. The only place they live: hand play, careful and random players all run through here."""
-from inn_sim.model import Action, DayDeal, DealtTraveler, InnState, Kind, TravelerView
+import math
+from dataclasses import dataclass
+from typing import Protocol
+
+from inn_sim.model import (Action, DayDeal, DayView, DealtTraveler, FinalEvent, InnState, Kind, RunDeal,
+                           TravelerView, Weather)
 
 # What each kind needs: (room, meal)
 NEEDS: dict[Kind, tuple[bool, bool]] = {
@@ -101,3 +106,89 @@ def serve(state: InnState, t: DealtTraveler, action: Action, params: dict[str, f
     if t.is_thief:
         state.thieves_tonight += 1
     return f"accepted +{pay}"
+
+
+def fire_need(occupied: int, weather: Weather, params: dict[str, float], blizzard: bool = False) -> int:
+    mult = {"normal": 1.0, "cold": params["mult_cold"], "snow": params["mult_snow"]}[weather]
+    if blizzard:
+        mult *= params["blizzard_mult"]
+    return math.ceil((params["fire_base"] + params["fire_per_room"] * occupied) * mult)
+
+
+def night(state: InnState, day: DayDeal, params: dict[str, float], final_event: FinalEvent | None) -> str:
+    """Burn firewood, let thieves steal, then apply the final-night event if there is one."""
+    notes = []
+    need = fire_need(state.occupied, day.weather, params, blizzard=final_event == "blizzard")
+    if state.firewood >= need:
+        state.firewood -= need
+        notes.append(f"burned {need} firewood")
+    else:
+        deficit = need - state.firewood
+        state.firewood = 0
+        state.coins = max(0, state.coins - deficit * int(params["shortage_coin_per_unit"]))
+        _add_goodwill(state, -int(params["shortage_goodwill"]), params)
+        notes.append(f"short {deficit} firewood")
+    for _ in range(state.thieves_tonight):
+        stolen = math.floor(state.coins * params["thief_steal_frac"])
+        state.coins -= stolen
+        notes.append(f"thief stole {stolen}")
+    if final_event == "hungry_soldiers":
+        want = int(params["hungry_soldiers_food"])
+        short = max(0, want - state.food)
+        state.food = max(0, state.food - want)
+        state.coins = max(0, state.coins - short * int(params["final_food_penalty"]))
+        notes.append(f"hungry soldiers, {short} food short")
+    elif final_event == "robbery":
+        if state.goodwill >= params["robbery_safe_goodwill"]:
+            notes.append("robbery stopped by goodwill")
+        else:
+            taken = math.floor(state.coins * params["robbery_frac"])
+            state.coins -= taken
+            notes.append(f"robbery took {taken}")
+    elif final_event == "blizzard":
+        notes.append("blizzard")
+    state.occupied = 0
+    state.thieves_tonight = 0
+    return ", ".join(notes)
+
+
+class Player(Protocol):
+    def market(self, state: InnState, day: DayView, params: dict[str, float]) -> tuple[int, int]: ...
+
+    def decide(self, state: InnState, day: DayView, slot: int, view: TravelerView,
+               params: dict[str, float]) -> Action: ...
+
+
+@dataclass(frozen=True)
+class RunResult:
+    won: bool
+    end_coins: int  # coins held before paying the debt (or when the run was lost)
+    lost_on_day: int | None
+    ledger: tuple[str, ...]
+
+
+def play_run(params: dict[str, float], deal: RunDeal, player: Player) -> RunResult:
+    state = new_state(params)
+    ledger: list[str] = []
+    last_day = int(params["days"])
+    for day in deal.days:
+        pay_upkeep(state, params)
+        if state.lost:
+            ledger.append(f"Day {day.day}: could not pay upkeep, run lost")
+            return RunResult(False, state.coins, day.day, tuple(ledger))
+        count = arrivals(state, day, params)
+        state.walkout_yesterday = False
+        view = DayView(day.day, day.weather, day.price_food, day.price_firewood, count)
+        food, wood = player.market(state, view, params)
+        buy(state, day, food, wood)
+        ledger.append(f"Day {day.day}: {day.weather}, {count} travelers, "
+                      f"coins {state.coins} food {state.food} firewood {state.firewood}")
+        for slot, t in enumerate(day.travelers[:count], start=1):
+            tv = traveler_view(state, t, params)
+            action = player.decide(state, view, slot, tv, params)
+            ledger.append(f"Day {day.day} slot {slot}: {tv.kind_shown} -> {action}: {serve(state, t, action, params)}")
+        final = deal.final_event if day.day == last_day else None
+        ledger.append(f"Day {day.day} night: {night(state, day, params, final)}")
+    won = state.coins >= params["debt"]
+    ledger.append(f"End: {state.coins} coins vs debt {int(params['debt'])}: {'WIN' if won else 'LOSS'}")
+    return RunResult(won, state.coins, None, tuple(ledger))

@@ -134,3 +134,86 @@ def test_arrivals_bonus_and_walkout_penalty(s):
     s.goodwill = 5
     s.walkout_yesterday = False
     assert arrivals(s, day(5, n=5), P) == 5  # never above the dealt slots
+
+
+# --- Task 4: night, final event, play_run ---
+from inn_sim.deal import deal_run
+from inn_sim.rules import fire_need, night, play_run
+
+
+class DeclineAll:
+    def market(self, state, day, params):
+        return (0, 0)
+
+    def decide(self, state, day, slot, view, params):
+        return "decline"
+
+
+def test_fire_need():
+    assert fire_need(2, "cold", P) == 5
+    assert fire_need(2, "snow", P, blizzard=True) == 12
+    assert fire_need(0, "normal", P) == 1
+
+
+def test_shortage_costs_coins_and_goodwill(s):
+    s.occupied, s.firewood = 2, 1
+    night(s, day(), P, None)
+    assert (s.firewood, s.coins, s.goodwill) == (0, 16, 0)
+
+
+def test_shortage_never_makes_coins_negative(s):
+    s.occupied, s.firewood, s.coins = 3, 0, 1
+    night(s, day(), P, None)
+    assert s.coins == 0
+
+
+def test_thief_steals_after_fire(s):
+    s.thieves_tonight = 1
+    night(s, day(), P, None)
+    assert s.coins == 14 and s.firewood == 7
+
+
+def test_night_frees_rooms_and_thieves(s):
+    s.occupied, s.thieves_tonight = 2, 1
+    night(s, day(), P, None)
+    assert (s.occupied, s.thieves_tonight) == (0, 0)
+
+
+def test_hungry_soldiers_shortfall_penalty(s):
+    s.food = 2
+    night(s, day(), P, "hungry_soldiers")
+    assert (s.food, s.coins) == (0, 8)
+
+
+def test_robbery_blocked_by_goodwill(s):
+    s.goodwill = 4
+    night(s, day(), P, "robbery")
+    assert s.coins == 20
+    s.goodwill = 3
+    night(s, day(), P, "robbery")
+    assert s.coins == 12
+
+
+def test_blizzard_doubles_fire(s):
+    night(s, day(), P, "blizzard")
+    assert s.firewood == 6
+
+
+def test_win_when_end_coins_reach_debt():
+    q = {**P, "start_coins": 100, "start_firewood": 100, "start_goodwill": 10}
+    r = play_run(q, deal_run(q, 1), DeclineAll())
+    assert r.won and r.end_coins == 79 and r.lost_on_day is None
+
+
+def test_lost_day_recorded():
+    q = {**P, "start_coins": 0}
+    r = play_run(q, deal_run(q, 1), DeclineAll())
+    assert not r.won and r.lost_on_day == 1 and r.end_coins == 0
+
+
+def test_ledger_has_one_line_per_traveler_and_night():
+    d = deal_run(P, 4)
+    q = {**P, "start_coins": 100, "start_firewood": 100}
+    r = play_run(q, d, DeclineAll())
+    assert sum("slot" in line for line in r.ledger) == sum(x.base_arrivals for x in d.days)
+    assert sum("night" in line for line in r.ledger) == 7
