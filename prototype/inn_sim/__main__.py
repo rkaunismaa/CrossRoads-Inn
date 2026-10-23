@@ -60,6 +60,45 @@ def cmd_init(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_deal(args: argparse.Namespace) -> int:
+    from inn_sim.deal import deal_run
+    from inn_sim.handplay import deal_to_rows, reveal_rows
+    from inn_sim.ods_write import write_sheets
+
+    params = load_params(Path(args.ods))
+    deal = deal_run(params, args.seed)
+    write_sheets(Path(args.ods), {"HandPlay": deal_to_rows(deal, params), "Reveal": reveal_rows(deal)})
+    print(f"dealt seed {args.seed} into {args.ods}: fill buy_food/buy_firewood (slot 1 rows) and decision, "
+          "save, close Calc, then run: python3 -m inn_sim replay")
+    return 0
+
+
+def cmd_replay(args: argparse.Namespace) -> int:
+    from inn_sim.deal import deal_run
+    from inn_sim.handplay import dealt_columns_match, read_decisions
+    from inn_sim.params import read_sheet
+    from inn_sim.players import CarefulPlayer
+    from inn_sim.rules import play_run
+
+    params = load_params(Path(args.ods))
+    rows = read_sheet(Path(args.ods), "HandPlay")
+    seed, player, warnings = read_decisions(rows)
+    deal = deal_run(params, seed)
+    if not dealt_columns_match(rows, deal, params):
+        print("warning: Params changed since this run was dealt; the replay uses the current Params")
+    for w in warnings:
+        print(f"warning: {w}")
+    yours = play_run(params, deal, player)
+    careful = play_run(params, deal, CarefulPlayer())
+    print(f"--- your run (seed {seed}) ---")
+    print("\n".join(yours.ledger))
+    print("--- result ---")
+    for name, r in (("you", yours), ("careful", careful)):
+        lost = f", lost on day {r.lost_on_day}" if r.lost_on_day else ""
+        print(f"{name:8} {'WIN ' if r.won else 'LOSS'} end coins {r.end_coins} (debt {int(params['debt'])}){lost}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="inn_sim", description="Crossroads Inn paper-prototype simulation")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -80,6 +119,15 @@ def build_parser() -> argparse.ArgumentParser:
     init = sub.add_parser("init", help="create balance.ods from DEFAULT_PARAMS (never overwrites)")
     init.add_argument("--ods", default="balance.ods")
     init.set_defaults(func=cmd_init)
+
+    deal = sub.add_parser("deal", help="deal a seeded run into the HandPlay and Reveal sheets")
+    deal.add_argument("--ods", default="balance.ods")
+    deal.add_argument("--seed", type=int, required=True)
+    deal.set_defaults(func=cmd_deal)
+
+    replay = sub.add_parser("replay", help="replay your HandPlay decisions and compare with the careful player")
+    replay.add_argument("--ods", default="balance.ods")
+    replay.set_defaults(func=cmd_replay)
     return parser
 
 
