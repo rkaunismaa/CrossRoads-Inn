@@ -1,22 +1,60 @@
 {
   "checkpoint": "sd_xl_base_1.0.safetensors",
   "style": "painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
-  "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime",
-  "defaults": {"steps": 30, "cfg": 6.5},
+  "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+  "defaults": {
+    "steps": 30,
+    "cfg": 6.5
+  },
   "assets": [
-    {"id": "backdrop", "width": 1344, "height": 768, "seed": 1001,
-     "prompt": "interior of a small cozy medieval inn at a crossroads, wide view, wooden bar counter in the middle, open wooden front door on the left with a dirt road outside, stone hearth with a fire on the right, empty room with no people"},
-    {"id": "merchant", "width": 832, "height": 1216, "seed": 2001,
-     "prompt": "head and shoulders portrait of a well-dressed traveling merchant, fur-trimmed coat, leather satchel strap, confident smile, plain dark background, centered"},
-    {"id": "pilgrim", "width": 832, "height": 1216, "seed": 2002,
-     "prompt": "head and shoulders portrait of a tired humble pilgrim in a rough brown hooded robe, wooden prayer beads, plain dark background, centered"},
-    {"id": "soldier", "width": 832, "height": 1216, "seed": 2003,
-     "prompt": "head and shoulders portrait of a weary soldier in a dented steel helmet and chainmail, snow on the shoulders, plain dark background, centered"},
-    {"id": "noble", "width": 832, "height": 1216, "seed": 2004,
-     "prompt": "head and shoulders portrait of a haughty young noble in a rich velvet doublet with gold embroidery, raised chin, plain dark background, centered"},
-    {"id": "wanderer", "width": 832, "height": 1216, "seed": 2005,
-     "prompt": "head and shoulders portrait of a wandering storyteller with a wide-brimmed traveling hat and a walking staff, knowing smile, plain dark background, centered"},
-    {"id": "bram", "width": 832, "height": 1216, "seed": 2006,
-     "prompt": "head and shoulders portrait of a weathered middle-aged local man in a simple wool tunic, friendly but wary eyes, short grey beard, plain dark background, centered"}
+    {
+      "id": "backdrop",
+      "width": 1344,
+      "height": 768,
+      "seed": 1002,
+      "prompt": "interior of a small cozy medieval inn at a crossroads, wide view, wooden bar counter in the middle, open wooden front door on the left with a dirt road outside, stone hearth with a fire on the right, empty room with no people, full bleed painting edge to edge"
+    },
+    {
+      "id": "merchant",
+      "width": 832,
+      "height": 1216,
+      "seed": 2001,
+      "prompt": "head and shoulders portrait of a well-dressed traveling merchant, fur-trimmed coat, leather satchel strap, confident smile, plain dark background, centered"
+    },
+    {
+      "id": "pilgrim",
+      "width": 832,
+      "height": 1216,
+      "seed": 2002,
+      "prompt": "head and shoulders portrait of a tired humble pilgrim in a rough brown hooded robe, wooden prayer beads, plain dark background, centered"
+    },
+    {
+      "id": "soldier",
+      "width": 832,
+      "height": 1216,
+      "seed": 2003,
+      "prompt": "head and shoulders portrait of a weary soldier in a dented steel helmet and chainmail, snow on the shoulders, plain dark background, centered"
+    },
+    {
+      "id": "noble",
+      "width": 832,
+      "height": 1216,
+      "seed": 2014,
+      "prompt": "head and shoulders portrait of a haughty young noble in a rich velvet doublet with gold embroidery, raised chin, plain dark background, centered"
+    },
+    {
+      "id": "wanderer",
+      "width": 832,
+      "height": 1216,
+      "seed": 2015,
+      "prompt": "head and shoulders portrait of a lean young wanderer with a dusty green cloak and a wide-brimmed traveling hat, clean-shaven, sharp curious eyes, plain dark background, centered"
+    },
+    {
+      "id": "bram",
+      "width": 832,
+      "height": 1216,
+      "seed": 2006,
+      "prompt": "head and shoulders portrait of a weathered middle-aged local man in a simple wool tunic, friendly but wary eyes, short grey beard, plain dark background, centered"
+    }
   ]
 }

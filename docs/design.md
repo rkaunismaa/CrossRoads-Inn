@@ -46,7 +46,7 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 ## Build stages
 1. Paper prototype: LibreOffice spreadsheet plus a Python simulation, in `prototype/` (see `prototype/tuning-log.md`). Done.
 2. Grey-box Godot prototype with text labels. Done (see below).
-3. Generated 2D art (portraits, backdrop) via ComfyUI.
+3. Generated 2D art (portraits, backdrop) via ComfyUI. Done: a painted inn backdrop and portraits of the five traveler types and Bram, made with SDXL base 1.0 on a local ComfyUI. See `tools/comfyui/` and `game/art/provenance.json`.
 4. Optional: one 3D prop via image-to-3D, cleaned in Blender, rendered to a sprite.
 5. Local-LLM dialogue for Bram.
 6. Linux export and Steam AI-disclosure review.

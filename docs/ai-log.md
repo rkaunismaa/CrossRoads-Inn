@@ -37,3 +37,13 @@ Short notes on what the agent did, what was fixed by hand, and rough time spent.
   - The agent twice wrote an invented description of Bram, once in the plan and once in a code comment, and corrected both to the design doc's wording.
 - Fixed by hand: nothing.
 - Time: about 1.5 hours of agent time.
+
+## 2026-10-23 - Generated 2D art (stage 3)
+- Agent:
+  - installed ComfyUI and SDXL base 1.0 (checksum matched), running on the RTX 4090;
+  - built a small ComfyUI API client and an asset generator, test-first;
+  - generated 7 images: the backdrop, the 5 traveler types, and Bram;
+  - added art loading to the scene, with a grey-box fallback.
+- Review by eye: the first batch had a backdrop with white unfinished edges, a noble with an ornate frame and an off-style look, and a wanderer who looked too much like Bram. The agent changed seeds and prompts and regenerated, then regenerated the rest so `assets.json` reproduces every image exactly.
+- Screenshots of the real scene showed white text was hard to read over the painting. The agent added dark backing panels and hid empty bubbles.
+- Fixed by hand: nothing. Time: about 45 minutes, plus about 25 minutes downloading the model.

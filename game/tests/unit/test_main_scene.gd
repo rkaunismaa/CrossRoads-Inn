@@ -139,3 +139,32 @@ func test_counter_top_bar_counts_travelers_still_to_come() -> void:
 		return
 	var more: int = main.runner.travelers_left() - 1
 	assert_string_contains(_node("TopBar").text, "%d more travelers today" % more)
+
+
+# --- art (stage 3) ---
+
+func test_traveler_portrait_matches_kind_shown() -> void:
+	_node("OpenDoors").pressed.emit()
+	if not _node("CounterPanel").visible:
+		pass_test("no travelers today")
+		return
+	var kind: String = main.runner.current_view().kind_shown
+	var portrait: TextureRect = _node("TravelerPortrait")
+	assert_true(portrait.visible)
+	assert_eq(portrait.texture.resource_path, "res://art/%s.png" % kind)
+
+
+func test_bram_and_backdrop_use_art() -> void:
+	assert_eq((_node("BramPortrait") as TextureRect).texture.resource_path, "res://art/bram.png")
+	assert_true(_node("Backdrop").visible)
+	assert_eq((_node("Backdrop") as TextureRect).texture.resource_path, "res://art/backdrop.png")
+
+
+func test_missing_art_falls_back_to_grey_boxes() -> void:
+	main.art_dir = "res://no_art_here/"
+	main.start_run(3)
+	assert_false(_node("Backdrop").visible)
+	assert_false(_node("BramPortrait").visible)
+	_node("OpenDoors").pressed.emit()
+	if _node("CounterPanel").visible:
+		assert_false(_node("TravelerPortrait").visible)

@@ -10,7 +10,8 @@ This is a learning project. It studies the full AI-assisted game development wor
 
 - **Stage 1, the paper prototype, is done.** The balance numbers are tuned. See [`prototype/tuning-log.md`](prototype/tuning-log.md).
 - **Stage 2, the grey-box Godot prototype, is done.** You can play a full week. Its rules match the simulation exactly, and Bram speaks fixed lines.
-- **Stage 3, generated 2D art, is next.**
+- **Stage 3, generated 2D art, is done.** A painted backdrop and portraits, made locally with SDXL in ComfyUI. Every image is reproducible from `tools/comfyui/assets.json`.
+- **Stage 4, an optional 3D prop, or stage 5, Bram's local-LLM dialogue, is next.**
 
 ## Layout
 
@@ -22,7 +23,8 @@ This is a learning project. It studies the full AI-assisted game development wor
 | `docs/superpowers/` | Specs and implementation plans. |
 | `prototype/` | The paper prototype: a Python simulation (`inn_sim`) and the `balance.ods` workbook. |
 | `game/` | The Godot 4 project, with GUT tests. |
-| `tools/` | Helper scripts, such as `run-tests.sh`. |
+| `tools/` | Helper scripts: `run-tests.sh`, and `comfyui/` for generating the art. |
+| `game/art/` | Generated art plus `provenance.json` (the prompt, seed and model behind each image). |
 
 ## Requirements
 
@@ -83,4 +85,5 @@ To deal the whole week at once instead, use `deal --seed 5`, fill in every day, 
 ## How AI is used
 
 - The game was designed and built with Claude Code. See the session history.
+- All art is AI-generated with Stable Diffusion XL base 1.0 (CreativeML Open RAIL++-M license) on a local ComfyUI. Prompts and seeds are recorded in `game/art/provenance.json`.
 - At runtime, a small local LLM will voice Bram, the recurring NPC who chats with the player. It only phrases facts the game code supplies, and it never decides outcomes.

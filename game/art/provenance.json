@@ -1,0 +1,93 @@
+{
+  "backdrop": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 768,
+    "id": "backdrop",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "interior of a small cozy medieval inn at a crossroads, wide view, wooden bar counter in the middle, open wooden front door on the left with a dirt road outside, stone hearth with a fire on the right, empty room with no people, full bleed painting edge to edge, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 1002,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 1344
+  },
+  "bram": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 1216,
+    "id": "bram",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "head and shoulders portrait of a weathered middle-aged local man in a simple wool tunic, friendly but wary eyes, short grey beard, plain dark background, centered, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 2006,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 832
+  },
+  "merchant": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 1216,
+    "id": "merchant",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "head and shoulders portrait of a well-dressed traveling merchant, fur-trimmed coat, leather satchel strap, confident smile, plain dark background, centered, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 2001,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 832
+  },
+  "noble": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 1216,
+    "id": "noble",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "head and shoulders portrait of a haughty young noble in a rich velvet doublet with gold embroidery, raised chin, plain dark background, centered, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 2014,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 832
+  },
+  "pilgrim": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 1216,
+    "id": "pilgrim",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "head and shoulders portrait of a tired humble pilgrim in a rough brown hooded robe, wooden prayer beads, plain dark background, centered, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 2002,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 832
+  },
+  "soldier": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 1216,
+    "id": "soldier",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "head and shoulders portrait of a weary soldier in a dented steel helmet and chainmail, snow on the shoulders, plain dark background, centered, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 2003,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 832
+  },
+  "wanderer": {
+    "cfg": 6.5,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "generated": "2026-10-23",
+    "height": 1216,
+    "id": "wanderer",
+    "negative": "text, watermark, signature, logo, frame border, extra fingers, deformed hands, blurry, low quality, photo, 3d render, anime, ornate border, picture frame, white edges, unfinished edges",
+    "prompt": "head and shoulders portrait of a lean young wanderer with a dusty green cloak and a wide-brimmed traveling hat, clean-shaven, sharp curious eyes, plain dark background, centered, painterly fantasy illustration, medieval roadside inn setting, warm candlelight, muted earthy palette, visible brush strokes, detailed",
+    "seed": 2015,
+    "steps": 30,
+    "tool": "ComfyUI",
+    "width": 832
+  }
+}

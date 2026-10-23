@@ -179,3 +179,8 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Built `tools/comfyui/` test-first: `comfy_client.py` (an SDXL text-to-image job sent to the ComfyUI API, using only the standard library) and `generate_assets.py` (generates the missing images from `assets.json` and writes `provenance.json`). 6 tests.
 - `assets.json` holds 7 images: the backdrop and portraits of the merchant, pilgrim, soldier, noble, wanderer and Bram. Bram's appearance is the agent's call (a weathered local man in a wool tunic); the design doc doesn't describe him.
 - Work happens on the branch `art-stage3`. Wrote 3 failing Godot tests: portraits match the traveler shown, Bram and the backdrop use their art, and the scene falls back to grey boxes when art is missing.
+- The model download finished. Its SHA-256 matched the published value for SDXL base 1.0. ComfyUI ran on the RTX 4090, at about 7 s per image.
+- Generated all 7 images and reviewed them on a contact sheet. Redid 3: the backdrop (white edges), the noble (an ornate frame and odd style), and the wanderer (too much like Bram; made younger with a green cloak). Then regenerated the other 4 so `assets.json` reproduces every image; `provenance.json` matches.
+- Scene integration: the backdrop sits behind everything, the portrait follows the traveler shown (a thief shows as the merchant), and Bram has his own portrait. It falls back to grey boxes if art is missing. 3 new tests; 79 GDScript tests passing.
+- Screenshots of the real scene showed white text was hard to read over the painting. Added dark backing panels behind text and hid empty bubbles.
+- Updated `docs/design.md` (stage 3 done), `README.md` (status, layout, and the AI-art disclosure note), the AI log and this history.
