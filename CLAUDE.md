@@ -5,7 +5,7 @@ A small top-down 2D resource-management game, built as a learning project to stu
 ## Tech
 - Engine: Godot 4.x (GDScript). Use typed variables. Never use Godot 3 syntax or APIs (e.g. no `onready` without `@`, use `@onready`, `@export`, `signal.connect()`).
 - Platform: Ubuntu Linux. Run headless where possible.
-- Tests: GUT or gdUnit4 for game rules; run headless.
+- Tests: GUT (vendored in `game/addons/gut`) for game rules; run headless with `tools/run-tests.sh`. Tests live in `game/tests/unit/`, rules in `game/scripts/rules/`.
 - Keep game rules in plain scripts separate from UI so they can be tested without the editor.
 
 ## Working rules
