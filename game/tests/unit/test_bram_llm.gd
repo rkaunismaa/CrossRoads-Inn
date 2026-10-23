@@ -26,11 +26,17 @@ func test_unreachable_server_fails_quietly() -> void:
 	llm.url = "http://127.0.0.1:9/api/chat"  # discard port: nothing listens
 	llm.timeout_s = 2.0
 	watch_signals(llm)
-	var id := llm.ask({"moment": "morning", "day": 1}, "morning_default", [])
+	var morning := {"moment": "morning", "day": 1, "weather": "normal", "travelers_coming": 3, "food_low": false,
+		"firewood_short_tonight": false, "cheap_firewood": false, "news": [], "final_night": false}
+	assert_true(BramVoice.check_facts(morning).ok, "the test must reach the network, not stop at the schema")
+	llm.warm = true  # skip the long cold-start timeout
+	var id := llm.ask(morning, "morning_default", [])
 	assert_gt(id, 0)
 	await wait_for_signal(llm.line_failed, 4)
 	assert_signal_emitted(llm, "line_failed")
 	assert_signal_not_emitted(llm, "line_ready")
+	var params: Array = get_signal_parameters(llm, "line_failed")
+	assert_string_starts_with(str(params[1]), "no answer")
 
 
 func test_live_model_answers_in_character() -> void:
@@ -46,3 +52,32 @@ func test_live_model_answers_in_character() -> void:
 	llm.ask(facts, "traveler_suspicious", Bram.LINES["traveler_suspicious"])
 	await wait_for_signal(llm.line_ready, 35)
 	assert_signal_emitted(llm, "line_ready")
+
+
+func test_cold_requests_get_a_long_timeout_until_the_model_answers() -> void:
+	llm.enabled = true
+	llm.url = "http://127.0.0.1:9/api/chat"
+	llm.timeout_s = 4.0
+	var morning := {"moment": "morning", "day": 1, "weather": "normal", "travelers_coming": 3, "food_low": false,
+		"firewood_short_tonight": false, "cheap_firewood": false, "news": [], "final_night": false}
+	assert_false(llm.warm)
+	llm.ask(morning, "morning_default", [])
+	assert_eq(_last_request().timeout, BramLLM.COLD_TIMEOUT_S, "first load of the model can take a while")
+	llm.warm = true
+	llm.ask(morning, "morning_default", [])
+	assert_eq(_last_request().timeout, 4.0)
+
+
+func test_warm_up_asks_the_model_to_load() -> void:
+	llm.enabled = true
+	llm.url = "http://127.0.0.1:9/api/chat"
+	llm.warm_up()
+	assert_eq(_last_request().timeout, BramLLM.COLD_TIMEOUT_S)
+
+
+func _last_request() -> HTTPRequest:
+	var found: HTTPRequest = null
+	for child in llm.get_children():
+		if child is HTTPRequest:
+			found = child
+	return found

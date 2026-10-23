@@ -7,6 +7,7 @@ var main: Control
 
 func before_each() -> void:
 	main = MainScene.instantiate()
+	main.llm_config_path = "res://data/no_llm_in_scene_tests.json"  # never reach a live model, however tests are run
 	add_child_autofree(main)
 	main.start_run(3)
 

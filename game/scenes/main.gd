@@ -30,6 +30,7 @@ func _ready() -> void:
 	add_child(llm)
 	llm.load_config(llm_config_path)
 	llm.line_ready.connect(_on_llm_line)
+	llm.warm_up()
 	start_run(randi())
 
 

@@ -54,6 +54,14 @@ Short notes on what the agent did, what was fixed by hand, and rough time spent.
   - Throwaway spikes found a problem and a fix. The plain `qwen3:4b` tag always writes its reasoning out loud, even with `think: false`, so the agent switched to `qwen3:4b-instruct` (Apache 2.0). Giving the model a code-chosen goal plus Bram's fixed lines as voice examples made its lines usable.
   - Built test-first: `BramVoice` (prompt, reply checks, fact schema), `BramLLM` (non-blocking Ollama client that fails quietly), scene wiring (fixed line first, the LLM line swaps in for the same moment only), and `game/tools/bram_eval.gd`. 101 GDScript tests, plus one opt-in live test.
 - Evaluation against the live model: 256/256 lines passed the checks, at a median of about 120 ms.
-- Prompt injection: the first run let 2 of 30 injections through ("Arrr"). The agent added a strict fact schema so outside text never reaches the model, and after that 0 of 30 got through. The model alone (schema off) still lets about 3 of 30 through, which is recorded in `docs/bram-eval.md`.
+- Prompt injection: the first run let 2 of 30 injections through ("Arrr"). The agent added a strict fact schema so outside text never reaches the model. With the schema on, all 30 are refused before the model, which shows the schema works. No fact in the game can carry outside text today, so there is no live attack surface. With the schema off, the model alone still lets 2 of 30 through, and `docs/bram-eval.md` records this.
+- Independent review (requested by the user) found no path to game state. It did find:
+  - real gaps in the reply checks (thief certainty with a curly apostrophe, numbers spelled out, "you won", unannounced final-night words, prompt leaks, narration, non-English text) and over-broad words ("tier", "prompt");
+  - a cold-start bug: the measured first load was 4.1 s, against a 4 s timeout that would cancel the load;
+  - a test that never reached the network;
+  - a live test command that failed;
+  - an eval that overstated its result.
+
+  All five were fixed test-first. The new live eval at first rejected 3 good lines ("won't" matched "won"), which was fixed test-first too. 106 tests passing; the live eval shows 256/256 lines OK.
 - Slip: the agent wrote "a regular" for Bram in a spike prompt again, and caught it before it reached the real prompt.
 - Fixed by hand: nothing. Time: about 1 hour, plus about 13 minutes of model downloads.

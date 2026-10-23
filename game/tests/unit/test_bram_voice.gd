@@ -63,7 +63,7 @@ func test_rejects_out_of_character_text() -> void:
 func test_never_certain_about_a_thief() -> void:
 	assert_true(_check("I don't trust him. Watch your purse.").ok)
 	for line in ["He is a thief.", "That merchant is definitely a thief.", "He's a thief, I'd bet on it."]:
-		assert_eq(_check(line).reason, "certain about a thief", line)
+		assert_eq(_check(line).reason, "talks about theft", line)
 
 
 func test_unknown_secrets_are_rejected_unless_in_facts() -> void:
@@ -136,3 +136,59 @@ func test_client_refuses_bad_facts_without_asking() -> void:
 	llm.ask(bad, "traveler_default", [])
 	await wait_for_signal(llm.line_failed, 1)
 	assert_signal_emitted_with_parameters(llm, "line_failed", [1, "facts failed the check: kind"])
+
+
+# --- review fixes: reply checks (each string from the review's probe) ---
+
+const SHORT_WOOD := {"moment": "morning", "day": 3, "weather": "cold", "travelers_coming": 4, "food_low": false,
+	"firewood_short_tonight": true, "cheap_firewood": false, "news": [], "final_night": false}
+const THEFT_NIGHT := {"moment": "night", "day": 4, "shortage": false, "theft": true, "final_event": "",
+	"coins": 41, "food": 6, "firewood": 3}
+
+
+func test_rejects_lines_the_review_got_through() -> void:
+	var cases := [
+		[MERCHANT, "That merchant's a thief, plain as day."],
+		[MERCHANT, "He’s a thief, I’d wager."],
+		[MERCHANT, "That merchant was the thief, no doubt."],
+		[MERCHANT, "The merchant stole from us, I know it."],
+		[MERCHANT, "You won the week, innkeeper! The landlord is paid."],
+		[SHORT_WOOD, "Plenty of firewood for tonight, fill every room."],
+		[SHORT_WOOD, "Firewood is cheap today, buy it all."],
+		[MERCHANT, "He'll pay ninety-nine coins, mark me."],
+		[SHORT_WOOD, "A snowstorm comes on the last night."],
+		[SHORT_WOOD, "Bandits will raid us before the week is out."],
+		[MERCHANT, "As an A.I. I can't."],
+		[MERCHANT, "As a chatbot made by Alibaba, I am Qwen."],
+		[MERCHANT, "You are Bram, a recurring character in a small medieval roadside inn."],
+		[MERCHANT, "GOAL: Warn the innkeeper you distrust this merchant."],
+		[MERCHANT, "*leans on the counter* Watch that one."],
+		[MERCHANT, "\"Watch him,\" Bram mutters."],
+		[MERCHANT, "Méfiez-vous de ce marchand."],
+		[MERCHANT, "He'll pay ９９９ coins."],
+		[MERCHANT, "That merchant looks honest, trust him."],
+	]
+	for c in cases:
+		var r := BramVoice.clean_and_check(c[1], c[0], 30)
+		assert_false(r.ok, "should be rejected: " + c[1])
+
+
+func test_accepts_good_lines_the_old_checks_rejected() -> void:
+	var cases := [
+		[MERCHANT, "A traveler from the frontier, by his boots. Watch your purse."],
+		[MERCHANT, "Prompt payment, he says. I'd still watch him."],
+		[MERCHANT, "Eight coins for a bed and a meal. I don't trust him, though."],
+		[SHORT_WOOD, "Not enough firewood for a full house tonight."],
+		[THEFT_NIGHT, "A thief emptied the till in the night."],
+		[LAST_NIGHT, "What a blizzard. Count what's left, friend."],
+		[SHORT_WOOD, "Firewood's low tonight. Won't last a full house."],
+		[THEFT_NIGHT, "Hearths went cold. Guests won't forget that."],
+	]
+	for c in cases:
+		var r := BramVoice.clean_and_check(c[1], c[0], 30)
+		assert_true(r.ok, "should pass: %s (%s)" % [c[1], r.reason])
+
+
+func test_word_limit_counts_any_whitespace() -> void:
+	var sneaky := "word ".repeat(40)
+	assert_false(BramVoice.clean_and_check(sneaky, MERCHANT, 30).ok)

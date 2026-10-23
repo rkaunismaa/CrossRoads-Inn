@@ -220,3 +220,13 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - Second run: 0 of 30 injections shown with the schema on. The model alone still lets 3 of 30 through.
 - Checked in the real scene: the fixed line appeared, then the live LLM line replaced it ("That merchant... looks off...").
 - Updated `docs/design.md` (the Bram section; stage 5 done), `README.md` and the AI log. 101 GDScript tests passing.
+
+### 4. "review first"
+- The user asked for an independent review before merging. The agent sent a fresh reviewer subagent over the `bram-llm` branch.
+- The reviewer found no path from the LLM to game state, and nothing critical. It reported 5 important and 7 minor findings. The agent fixed the 5 important ones, each test-first:
+  - **Reply checks:** text is normalized first (curly quotes, fullwidth, zero-width, unusual spaces). Replies must be plain English. Theft talk is allowed only on a theft night. "Won/win" claims, spelled-out numbers not in the facts, final-night words the facts don't support, prompt leaks, narration and rude words are rejected, and so are lines that contradict the facts ("plenty of firewood", "trust him"). The over-broad "tier", "prompt" and "system" rules were dropped.
+  - **Cold start:** a warm-up call, plus a 60 s timeout until the model first answers. The measured cold start was 4.1 s, which the old 4 s limit would have cancelled.
+  - **Tests:** the unreachable-server test now reaches the network. The scene tests use a missing LLM config, so `CROSSROADS_LLM_LIVE=1 tools/run-tests.sh` passes (106).
+  - **Eval:** replies in the model-alone run are now checked against the clean facts; success detection is better (French, copied phrases); the cold start is measured; and the docs say plainly that the schema is what blocks injections.
+- The new live eval first rejected 3 good lines ("won't" matched "won"). A failing test reproduced it, then the rule was fixed. Final live eval: 256/256 lines OK, 0/30 injections with the schema, 2/30 with the model alone, and a cold start of 4.1 s.
+- Deferred minors: a stray comment in `main.gd`; `pending_bram_id` not cleared on the error/end screens; superseded requests not cancelled; no character cap and the 25 vs 30 word mismatch; the schema copies the word lists rather than reading the Dealer constants; and one bad news item would disable later mornings' LLM lines.

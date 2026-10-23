@@ -45,7 +45,8 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 - There are two safety layers:
   - **Before the model:** facts must match a strict schema (known keys, types and words), so outside text can't reach the model.
   - **After the model:** replies are rejected if they are too long, invent numbers, break character, claim certainty about a thief, or mention things not in the facts.
-- The model never changes game state. Prompt injection is tested by `game/tools/bram_eval.gd`, and the results are in `docs/bram-eval.md`.
+- The model never changes game state. Prompt injection is tested by `game/tools/bram_eval.gd`, and the results are in `docs/bram-eval.md`. Today no fact can carry outside text, so the schema refuses every injection. The eval also measures the model on its own, which is weaker, so that any future free text (names, player input) must stay behind the schema.
+- On first use, the game asks Ollama to load the model (a warm-up). Requests wait up to 60 s until the model has answered once, because giving up earlier makes Ollama abandon the load.
 
 ## Build stages
 1. Paper prototype: LibreOffice spreadsheet plus a Python simulation, in `prototype/` (see `prototype/tuning-log.md`). Done.

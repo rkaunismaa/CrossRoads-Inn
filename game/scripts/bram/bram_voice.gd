@@ -36,12 +36,31 @@ const GOALS := {
 	"night_default": "Wish a quiet good night and sum up the stores.",
 }
 
-## Out-of-character signs: talking about itself, its instructions, or the data format.
-const OUT_OF_CHARACTER := "\\b(ai|a\\.i\\.|language model|assistant|instructions?|prompt|system|json|facts)\\b"
-## Claiming certainty about a thief. Bram may only suspect.
-const CERTAIN_THIEF := "\\b(is|he's|she's|they're|definitely|certainly|surely)\\b[^.!?]{0,20}\\bthief\\b"
-## Game words the facts may not support: mentioning them unprompted means the model invented or leaked them.
-const GUARDED_WORDS: PackedStringArray = ["blizzard", "robbery", "robber", "hungry soldiers", "goodwill", "tier"]
+## Out of character: talking about itself, its instructions, or echoing the prompt.
+const OUT_OF_CHARACTER := "(\\bai\\b|\\ba\\.i\\.|language model|\\bassistant\\b|\\bchatbot\\b|\\bqwen\\b|\\balibaba\\b|\\binstructions?\\b|system prompt|\\bjson\\b|\\bgoal:|\\bfacts:|recurring character|the player)"
+## Narration instead of speech: stage directions, embedded quotes, Bram talking about himself.
+const NARRATION := "(\\*|\"|\\bbram\\b)"
+const RUDE := "\\b(fuck\\w*|shit\\w*|cunt\\w*|bitch\\w*|whore\\w*|piss\\w*)\\b"
+## Talk of theft is allowed only on a night when a theft happened: Bram can't know who is a thief.
+const THEFT_WORDS := "\\b(thie(f|ves|ving)|stole|stolen|steal(s|ing)?|rob(s|bed|bing|ber|bers|bery)?)\\b"
+## Claiming the run's outcome, which only the game decides.
+const OUTCOME_WORDS := "\\b(won(?!')|win|wins|winning|victory)\\b"  # not "won't"
+## Final-night words, allowed only when the facts mention that event: word pattern -> fact text required.
+const EVENT_WORDS := {
+	"\\b(blizzard|snowstorm|storms?)\\b": "blizzard",
+	"\\b(bandits?|raid(s|ers?)?|robbery)\\b": "robbery",
+	"\\bhungry soldiers?\\b": "hungry",
+	"\\bgoodwill\\b": "goodwill",
+}
+## Number words. "one" is left out: it is usually a pronoun ("that one").
+const NUMBER_WORDS := {
+	"zero": 0, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+	"ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
+	"seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
+	"sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90, "hundred": 100, "thousand": 1000, "dozen": 12,
+}
+## Lines that contradict the facts (a negation just before the word is fine: "not enough", "don't trust him").
+const NOT_BEFORE := "(?<!not )(?<!n't )(?<!never )"
 
 
 ## The only facts that may reach the model, per moment: key -> type, or a list of allowed words.
@@ -106,33 +125,81 @@ static func build_request(facts: Dictionary, situation: String, examples: Array,
 ## Returns {"ok": bool, "text": String, "reason": String}. text is the cleaned line when ok.
 static func clean_and_check(raw: String, facts: Dictionary, max_words: int) -> Dictionary:
 	var text := ""
-	for line in raw.strip_edges().split("\n"):
+	for line in _normalize(raw).split("\n"):
 		if line.strip_edges() != "":
 			text = line.strip_edges()
 			break
 	if text.to_lower().begins_with("bram:"):
 		text = text.substr(5).strip_edges()
-	text = text.trim_prefix("\"").trim_suffix("\"").trim_prefix("“").trim_suffix("”").strip_edges()
+	if text.length() >= 2 and text.begins_with("\"") and text.ends_with("\""):
+		text = text.substr(1, text.length() - 2).strip_edges()
 	if text == "":
 		return _no("empty")
-	if text.split(" ", false).size() > max_words:
+	for i in text.length():
+		if text.unicode_at(i) > 126:
+			return _no("not plain English")
+	if RegEx.create_from_string("\\S+").search_all(text).size() > max_words:
 		return _no("too long")
 	var lower := text.to_lower()
-	var facts_text := JSON.stringify(facts).to_lower()
-	if RegEx.create_from_string(OUT_OF_CHARACTER).search(lower) != null:
+	var facts_text := JSON.stringify(facts).to_lower().replace("_", " ")
+	if _found(NARRATION, lower):
+		return _no("narration, not speech")
+	if _found(OUT_OF_CHARACTER, lower):
 		return _no("out of character")
-	if RegEx.create_from_string(CERTAIN_THIEF).search(lower) != null:
-		return _no("certain about a thief")
-	for word in GUARDED_WORDS:
-		if lower.contains(word) and not facts_text.contains(word.replace(" ", "_")) and not facts_text.contains(word):
+	if _found(RUDE, lower):
+		return _no("rude")
+	if _found(THEFT_WORDS, lower) and not facts.get("theft", false):
+		return _no("talks about theft")
+	if _found(OUTCOME_WORDS, lower):
+		return _no("claims an outcome")
+	for pattern: String in EVENT_WORDS:
+		if _found(pattern, lower) and not facts_text.contains(EVENT_WORDS[pattern]):
 			return _no("mentions something not in the facts")
+	if facts.get("firewood_short_tonight", false) and _found(NOT_BEFORE + "\\b(plenty|enough)\\b", lower):
+		return _no("contradicts the facts")
+	if lower.contains("cheap") and not facts.get("cheap_firewood", false) and not str(facts.get("news", [])).contains("cheap"):
+		return _no("contradicts the facts")
+	if facts.get("suspicious", false) and _found(NOT_BEFORE + "(?<!don't )(?<!do not )\\b(honest|trustworthy|trust (him|her|them))\\b", lower):
+		return _no("contradicts the facts")
 	var allowed := {}
 	for m in RegEx.create_from_string("\\d+").search_all(facts_text):
-		allowed[m.get_string()] = true
+		allowed[int(m.get_string())] = true
 	for m in RegEx.create_from_string("\\d+").search_all(text):
-		if not allowed.has(m.get_string()):
+		if not allowed.has(int(m.get_string())):
+			return _no("invented number")
+	for m in RegEx.create_from_string("[a-z]+").search_all(lower):
+		var word := m.get_string()
+		if NUMBER_WORDS.has(word) and not allowed.has(NUMBER_WORDS[word]):
 			return _no("invented number")
 	return {"ok": true, "text": text, "reason": ""}
+
+
+## Map look-alike characters to plain ASCII and drop invisible ones, so the checks can't be dodged.
+static func _normalize(raw: String) -> String:
+	var out := ""
+	for i in raw.length():
+		var c := raw.unicode_at(i)
+		if c in [0x200B, 0x200C, 0x200D, 0x2060, 0xFEFF] or (c < 32 and c != 10):
+			continue
+		if c >= 0xFF01 and c <= 0xFF5E:  # fullwidth forms
+			c -= 0xFEE0
+		elif c in [0x00A0, 0x2002, 0x2003, 0x2009, 0x202F, 0x3000]:  # unusual spaces
+			c = 32
+		elif c in [0x2018, 0x2019, 0x02BC]:
+			c = 39  # '
+		elif c in [0x201C, 0x201D]:
+			c = 34  # "
+		elif c in [0x2013, 0x2014]:
+			c = 45  # -
+		elif c == 0x2026:
+			out += "..."
+			continue
+		out += String.chr(c)
+	return out
+
+
+static func _found(pattern: String, text: String) -> bool:
+	return RegEx.create_from_string(pattern).search(text) != null
 
 
 static func _no(reason: String) -> Dictionary:
