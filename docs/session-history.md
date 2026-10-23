@@ -190,3 +190,12 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 4. "push it"
 - Pushed `main` to GitHub, including the stage 3 art.
+
+---
+
+## Session 3 - 2026-10-23 (resumed)
+
+### 1. "continue"
+- Resumed the same Claude Code session. The agent checked the state: `main` matches GitHub, and stages 1–3 are done.
+- Tooling found: Ollama is installed and running locally but has no models pulled. Blender is not installed.
+- Next is either stage 4 (an optional 3D prop) or stage 5 (Bram's local-LLM dialogue). The agent asked the user which one.
