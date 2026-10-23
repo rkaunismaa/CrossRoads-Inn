@@ -217,3 +217,33 @@ def test_ledger_has_one_line_per_traveler_and_night():
     r = play_run(q, d, DeclineAll())
     assert sum("slot" in line for line in r.ledger) == sum(x.base_arrivals for x in d.days)
     assert sum("night" in line for line in r.ledger) == 7
+
+
+# --- daily mode support ---
+from inn_sim.rules import play_days
+
+
+def test_play_days_stops_after_the_given_day():
+    q = {**P, "start_coins": 100, "start_firewood": 100}
+    progress = play_days(q, deal_run(q, 4), DeclineAll(), through_day=2)
+    assert not any(line.startswith("Day 3") for line in progress.ledger)
+    assert set(progress.arrivals) == {1, 2} and progress.lost_on_day is None
+
+
+def test_play_days_full_matches_play_run():
+    q = {**P, "start_coins": 100, "start_firewood": 100}  # a run that reaches the end
+    d = deal_run(q, 6)
+    full = play_days(q, d, DeclineAll(), through_day=7)
+    assert tuple(full.ledger) == play_run(q, d, DeclineAll()).ledger[:-1]  # play_run adds the End line
+
+
+def test_wanderer_news_shows_in_outcome(s):
+    out = serve(s, T("wanderer", news="weather:3=snow"), "accept", P)
+    assert "day 3 will be snow" in out
+
+
+def test_night_line_shows_stock_after_the_night():
+    q = {**P, "start_coins": 100, "start_firewood": 100}
+    r = play_run(q, deal_run(q, 4), DeclineAll())
+    night_line = next(line for line in r.ledger if "night" in line)
+    assert "coins" in night_line and "firewood" in night_line

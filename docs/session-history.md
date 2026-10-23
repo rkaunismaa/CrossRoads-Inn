@@ -91,3 +91,21 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 9. "push main and delete the remote branch"
 - Pushed `main` to GitHub and deleted the remote `paper-prototype` branch. Local `main` now matches `origin/main`.
+
+### 10. "add a mode that deals one day at a time"
+- Short design conversation. The user wants to see how each day turned out first, then the next day's travelers.
+- The agent described a small change:
+  - `deal --daily` writes only day 1;
+  - `next` prints the day's results, logs them to a `DayLog` sheet, and adds the next day with only the travelers who really arrive;
+  - `Reveal` is filled only after day 7;
+  - earlier days are replayed from the sheet every time.
+
+  The user approved it ("go ahead and build it"). Work happens on the branch `daily-deal`.
+- Built daily mode test-first. Each piece's tests were watched failing, then passing:
+  - `rules.play_days()` plays a run up to a given day, and `play_run` now uses it;
+  - wanderer news appears in plain words in the ledger;
+  - each night line shows the stock after the night;
+  - `handplay.daily_rows()` lists only travelers who really arrived, labels the column `arrivals`, and keeps the player's cells;
+  - `deal --daily` and `next` added to the CLI.
+- One test was wrong: it compared a lost run, which has no End line, and compared a list to a tuple. The agent fixed the test, not the code.
+- 104 tests passing. Tried it by hand on a copy of the workbook (seed 5, day 1, then `next`).

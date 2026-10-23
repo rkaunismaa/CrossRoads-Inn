@@ -133,3 +133,60 @@ def dealt_columns_match(rows: list[list[str]], deal: RunDeal, params: dict[str, 
             if got[i].strip() != (str(w) if not isinstance(w, float) else f"{w:g}"):
                 return False
     return True
+
+
+# --- daily mode: one day at a time ---
+# Same columns, but the arrivals column holds the real count, which is known each morning.
+DAILY_HEADER = ["arrivals" if name == "base_arrivals" else name for name in HANDPLAY_HEADER]
+_DAILY_MARK = "mode=daily"
+
+
+def is_daily(rows: list[list[str]]) -> bool:
+    return any(len(r) > 1 and r[0].strip().startswith("seed=") and r[1].strip() == _DAILY_MARK for r in rows)
+
+
+def last_dealt_day(rows: list[list[str]]) -> int:
+    days = []
+    for r in rows:
+        try:
+            days.append(_int(r[0]))
+        except (ValueError, IndexError):
+            continue
+    return max(days, default=0)
+
+
+def _user_cells(rows: list[list[str]]) -> dict[tuple[int, int], dict[str, str]]:
+    """The cells the player filled in, keyed by (day, slot)."""
+    header_at = next((i for i, r in enumerate(rows) if "day" in r and "decision" in r), None)
+    if header_at is None:
+        return {}
+    col = {name: rows[header_at].index(name) for name in _USER_COLUMNS if name in rows[header_at]}
+    day_i, slot_i = rows[header_at].index("day"), rows[header_at].index("slot")
+    cells: dict[tuple[int, int], dict[str, str]] = {}
+    for r in rows[header_at + 1:]:
+        try:
+            key = (_int(r[day_i]), _int(r[slot_i]))
+        except (ValueError, IndexError):
+            continue
+        cells[key] = {name: r[i] for name, i in col.items() if i < len(r) and r[i].strip()}
+    return cells
+
+
+def daily_rows(deal: RunDeal, params: dict[str, float], arrivals: dict[int, int],
+               user_rows: list[list[str]] | None = None) -> list[list]:
+    """HandPlay for days 1..max(arrivals): only travelers who really arrived, with the player's cells kept."""
+    kept = _user_cells(user_rows or [])
+    rows: list[list] = [[f"seed={deal.seed}", _DAILY_MARK], list(DAILY_HEADER)]
+    for day in deal.days[:max(arrivals, default=0)]:
+        for slot, t in enumerate(day.travelers[:arrivals.get(day.day, 0)], start=1):
+            row = [day.day, day.weather, day.price_food, day.price_firewood, arrivals[day.day], slot,
+                   t.kind, "yes" if t.hint else "no", _needs(t.kind), _base_offer(t.kind, params), "", "", "", ""]
+            for name, value in kept.get((day.day, slot), {}).items():
+                if name.startswith("buy_"):
+                    try:
+                        value = float(value)  # keep amounts as numbers in Calc
+                    except ValueError:
+                        pass  # read_decisions will warn about it
+                row[HANDPLAY_HEADER.index(name)] = value
+            rows.append(row)
+    return rows

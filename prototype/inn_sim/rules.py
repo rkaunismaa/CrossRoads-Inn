@@ -16,6 +16,17 @@ NEEDS: dict[Kind, tuple[bool, bool]] = {
 }
 
 
+def describe_news(news: str) -> str:
+    """Plain words for a news item, for ledgers and hand play."""
+    topic, _, value = news.partition(":")
+    if topic == "weather":
+        when, _, weather = value.partition("=")
+        return f"day {when} will be {weather}"
+    if topic == "cheap":
+        return "no cheap firewood days ahead" if value == "none" else f"firewood is cheap on day {value}"
+    return f"the final night brings: {value.replace('_', ' ')}"
+
+
 def new_state(params: dict[str, float]) -> InnState:
     return InnState(
         coins=int(params["start_coins"]),
@@ -101,10 +112,11 @@ def serve(state: InnState, t: DealtTraveler, action: Action, params: dict[str, f
     state.coins += pay
     if t.kind == "pilgrim":
         _add_goodwill(state, int(params["pilgrim_goodwill"]), params)
-    if t.kind == "wanderer" and t.news:
-        state.news.append(t.news)
     if t.is_thief:
         state.thieves_tonight += 1
+    if t.kind == "wanderer" and t.news:
+        state.news.append(t.news)
+        return f"accepted +{pay}, news: {describe_news(t.news)}"
     return f"accepted +{pay}"
 
 
@@ -167,16 +179,28 @@ class RunResult:
     ledger: tuple[str, ...]
 
 
-def play_run(params: dict[str, float], deal: RunDeal, player: Player) -> RunResult:
+@dataclass
+class Progress:
+    """A run played up to some day: used by daily hand play to stop between days."""
+    state: InnState
+    ledger: list[str]
+    lost_on_day: int | None
+    arrivals: dict[int, int]  # day -> travelers who really arrived
+
+
+def play_days(params: dict[str, float], deal: RunDeal, player: Player, through_day: int) -> Progress:
     state = new_state(params)
-    ledger: list[str] = []
+    progress = Progress(state, [], None, {})
+    ledger = progress.ledger
     last_day = int(params["days"])
-    for day in deal.days:
+    for day in deal.days[:through_day]:
         pay_upkeep(state, params)
         if state.lost:
             ledger.append(f"Day {day.day}: could not pay upkeep, run lost")
-            return RunResult(False, state.coins, day.day, tuple(ledger))
+            progress.lost_on_day = day.day
+            return progress
         count = arrivals(state, day, params)
+        progress.arrivals[day.day] = count
         state.walkout_yesterday = False
         view = DayView(day.day, day.weather, day.price_food, day.price_firewood, count)
         food, wood = player.market(state, view, params)
@@ -188,7 +212,17 @@ def play_run(params: dict[str, float], deal: RunDeal, player: Player) -> RunResu
             action = player.decide(state, view, slot, tv, params)
             ledger.append(f"Day {day.day} slot {slot}: {tv.kind_shown} -> {action}: {serve(state, t, action, params)}")
         final = deal.final_event if day.day == last_day else None
-        ledger.append(f"Day {day.day} night: {night(state, day, params, final)}")
+        outcome = night(state, day, params, final)
+        ledger.append(f"Day {day.day} night: {outcome}; now coins {state.coins} food {state.food} "
+                      f"firewood {state.firewood}")
+    return progress
+
+
+def play_run(params: dict[str, float], deal: RunDeal, player: Player) -> RunResult:
+    progress = play_days(params, deal, player, int(params["days"]))
+    state, ledger = progress.state, progress.ledger
+    if progress.lost_on_day is not None:
+        return RunResult(False, state.coins, progress.lost_on_day, tuple(ledger))
     won = state.coins >= params["debt"]
     ledger.append(f"End: {state.coins} coins vs debt {int(params['debt'])}: {'WIN' if won else 'LOSS'}")
     return RunResult(won, state.coins, None, tuple(ledger))

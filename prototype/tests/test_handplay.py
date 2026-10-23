@@ -190,3 +190,93 @@ def test_blank_decision_for_arrived_traveler_warns():
     arrived = sum("slot" in line for line in result.ledger)
     assert len(warnings) == arrived - 1  # every arrived traveler except day 1 slot 1
     assert f"row {find_row(rows, 1, 2) + 1}" in warnings[0] and "treated as decline" in warnings[0]
+
+
+# --- daily mode ---
+from inn_sim.handplay import DAILY_HEADER, daily_rows, is_daily, last_dealt_day
+
+
+def test_daily_rows_only_arrived_travelers_through_day():
+    d = deal_run(P, 2)
+    rows = daily_rows(d, P, {1: 3, 2: 4})
+    assert rows[0] == ["seed=2", "mode=daily"] and rows[1] == DAILY_HEADER
+    assert DAILY_HEADER[COL["base_arrivals"]] == "arrivals"
+    body = rows[2:]
+    assert [(r[0], r[5]) for r in body] == [(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (2, 4)]
+    assert body[0][COL["base_arrivals"]] == 3  # the real count, not the dealt base
+
+
+def test_daily_rows_keep_user_cells():
+    d = deal_run(P, 2)
+    sheet = as_sheet(daily_rows(d, P, {1: 3}))
+    set_cell(sheet, find_row(sheet, 1, 2), "decision", "accept")
+    set_cell(sheet, find_row(sheet, 1, 1), "buy_food", "4")
+    set_cell(sheet, find_row(sheet, 1, 3), "notes", "looked shifty")
+    rows = as_sheet(daily_rows(d, P, {1: 3, 2: 2}, user_rows=sheet))
+    assert rows[find_row(rows, 1, 2)][COL["decision"]] == "accept"
+    assert rows[find_row(rows, 1, 1)][COL["buy_food"]] == "4"
+    assert rows[find_row(rows, 1, 3)][COL["notes"]] == "looked shifty"
+    assert find_row(rows, 2, 2)
+
+
+def test_daily_sheet_reads_back_as_decisions():
+    d = deal_run(P, 2)
+    sheet = as_sheet(daily_rows(d, P, {1: 3}))
+    set_cell(sheet, find_row(sheet, 1, 1), "decision", "accept")
+    seed, player, warnings = read_decisions(sheet)
+    assert seed == 2 and player.decisions == {(1, 1): "accept"} and warnings == []
+
+
+def test_daily_mode_and_last_day_detected():
+    d = deal_run(P, 2)
+    assert is_daily(as_sheet(daily_rows(d, P, {1: 3, 2: 4})))
+    assert not is_daily(as_sheet(deal_to_rows(d, P)))
+    assert last_dealt_day(as_sheet(daily_rows(d, P, {1: 3, 2: 4}))) == 2
+
+
+def test_daily_rows_hide_secrets():
+    for seed in range(30):
+        d = deal_run(P, seed)
+        text = " ".join(str(c) for r in daily_rows(d, P, {k: 3 for k in range(1, 8)}) for c in r)
+        assert "thief" not in text and d.final_event not in text
+
+
+@uno_only
+def test_daily_cli_plays_a_week(tmp_path, monkeypatch, capsys):
+    pytest.importorskip("uno")
+    from inn_sim.__main__ import main
+    from inn_sim.params import read_sheet
+
+    monkeypatch.chdir(tmp_path)
+    ods = tmp_path / "balance.ods"
+    main(["init"])
+    assert main(["deal", "--seed", "3", "--daily"]) == 0
+    hp = read_sheet(ods, "HandPlay")
+    assert hp[0] == ["seed=3", "mode=daily"] and {r[0] for r in hp[2:]} == {"1"}
+    assert read_sheet(ods, "Reveal") == [list(read_sheet(ods, "Reveal")[0])]  # header only
+
+    capsys.readouterr()
+    assert main(["next"]) == 0
+    out = capsys.readouterr().out
+    assert out.index("Day 1 night") < out.index("Day 2 is dealt")  # results first, then the new day
+    assert {r[0] for r in read_sheet(ods, "HandPlay")[2:]} == {"1", "2"}
+    assert any("Day 1 night" in " ".join(r) for r in read_sheet(ods, "DayLog"))
+    assert len(read_sheet(ods, "Reveal")) == 1
+
+    for _ in range(10):
+        if main(["next"]) != 0 or "careful" in capsys.readouterr().out:
+            break
+    assert any(r and r[0] == "final_event" for r in read_sheet(ods, "Reveal"))
+    assert main(["next"]) == 2  # the run is over
+
+
+def test_next_refuses_full_week_sheet(tmp_path, monkeypatch, capsys):
+    from inn_sim.__main__ import main
+    from tests.ods_fixture import make_ods
+    from inn_sim.params import DEFAULT_PARAMS
+
+    params = [["name", "value", "notes"]] + [[k, str(v), n] for k, (v, n) in DEFAULT_PARAMS.items()]
+    make_ods(tmp_path / "balance.ods", {"Params": params, "HandPlay": as_sheet(deal_to_rows(deal_run(P, 1), P))})
+    monkeypatch.chdir(tmp_path)
+    assert main(["next"]) == 2
+    assert "--daily" in capsys.readouterr().err

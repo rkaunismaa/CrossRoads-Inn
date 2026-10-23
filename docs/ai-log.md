@@ -15,3 +15,9 @@ Short notes on what the agent did, what was fixed by hand, and rough time spent.
 - Not solved: the debt ×1.1 sensitivity (careful win 0.586 vs the 0.60 floor) appears to conflict with the tight bar itself. It was escalated to the user.
 - Fixed by hand: nothing so far.
 - Time: about 1.5 hours of agent time for the whole stage.
+
+## 2026-10-23 - Daily hand-play mode
+- Agent: short design check (results first, then the next day), then built `deal --daily` and `next` test-first. 17 new tests, 104 in total.
+- Fixed by the agent: one wrong test (it compared a lost run's ledger against a winning run's shape).
+- Fixed by hand: nothing.
+- Time: about 20 minutes.

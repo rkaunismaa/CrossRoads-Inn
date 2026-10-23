@@ -66,14 +66,78 @@ def cmd_init(args: argparse.Namespace) -> int:
 
 def cmd_deal(args: argparse.Namespace) -> int:
     from inn_sim.deal import deal_run
-    from inn_sim.handplay import deal_to_rows, reveal_rows
+    from inn_sim.handplay import REVEAL_HEADER, daily_rows, deal_to_rows, reveal_rows
     from inn_sim.ods_write import write_sheets
+    from inn_sim.rules import arrivals, new_state
 
     params = load_params(Path(args.ods))
     deal = deal_run(params, args.seed)
+    if args.daily:
+        first = arrivals(new_state(params), deal.days[0], params)
+        write_sheets(Path(args.ods), {"HandPlay": daily_rows(deal, params, {1: first}),
+                                      "Reveal": [REVEAL_HEADER], "DayLog": [["Day log: filled in by next"]]})
+        print(f"dealt day 1 of seed {args.seed} into {args.ods}: fill buy_food/buy_firewood (slot 1 row) and "
+              "decision, save, close Calc, then run: python3 -m inn_sim next")
+        return 0
     write_sheets(Path(args.ods), {"HandPlay": deal_to_rows(deal, params), "Reveal": reveal_rows(deal)})
     print(f"dealt seed {args.seed} into {args.ods}: fill buy_food/buy_firewood (slot 1 rows) and decision, "
           "save, close Calc, then run: python3 -m inn_sim replay")
+    return 0
+
+
+def _print_results(params: dict[str, float], yours: object, careful: object) -> None:
+    print("--- result ---")
+    for name, r in (("you", yours), ("careful", careful)):
+        lost = f", lost on day {r.lost_on_day}" if r.lost_on_day else ""
+        print(f"{name:8} {'WIN ' if r.won else 'LOSS'} end coins {r.end_coins} (debt {int(params['debt'])}){lost}")
+
+
+def cmd_next(args: argparse.Namespace) -> int:
+    from inn_sim.deal import deal_run
+    from inn_sim.handplay import (blank_decision_warnings, daily_rows, is_daily, last_dealt_day, read_decisions,
+                                  reveal_rows)
+    from inn_sim.ods_write import write_sheets
+    from inn_sim.params import read_sheet
+    from inn_sim.players import CarefulPlayer
+    from inn_sim.rules import arrivals, play_days, play_run
+
+    ods = Path(args.ods)
+    params = load_params(ods)
+    rows = read_sheet(ods, "HandPlay")
+    if not is_daily(rows):
+        raise ValueError("HandPlay is not a daily run; start one with: python3 -m inn_sim deal --seed N --daily")
+    if any(r and r[0] == "final_event" for r in read_sheet(ods, "Reveal")):
+        raise ValueError("this run is over; deal a new one with: python3 -m inn_sim deal --seed N --daily")
+
+    seed, player, warnings = read_decisions(rows)
+    deal = deal_run(params, seed)
+    today, last_day = last_dealt_day(rows), int(params["days"])
+    progress = play_days(params, deal, player, today)
+    for w in warnings + blank_decision_warnings(player):
+        print(f"warning: {w}")
+
+    # How today turned out comes first.
+    print(f"--- how day {today} went ---")
+    print("\n".join(line for line in progress.ledger if line.split(":")[0].split(" ")[1] == str(today)))
+
+    finished = progress.lost_on_day is not None or today == last_day
+    if not finished and progress.state.coins < params["upkeep"]:
+        print(f"Day {today + 1}: could not pay upkeep, run lost")
+        finished = True
+    if finished:
+        _, player, _ = read_decisions(rows)  # fresh player for the full replay
+        yours = play_run(params, deal, player)
+        _print_results(params, yours, play_run(params, deal, CarefulPlayer()))
+        write_sheets(ods, {"DayLog": [[line] for line in yours.ledger], "Reveal": reveal_rows(deal)})
+        print("the Reveal sheet now shows the hidden truth of this run")
+        return 0
+
+    tomorrow = today + 1
+    counts = {**progress.arrivals, tomorrow: arrivals(progress.state, deal.days[today], params)}
+    write_sheets(ods, {"HandPlay": daily_rows(deal, params, counts, user_rows=rows),
+                       "DayLog": [[line] for line in progress.ledger]})
+    print(f"--- Day {tomorrow} is dealt: {counts[tomorrow]} travelers. Fill it in, save, close Calc, "
+          "then run next again ---")
     return 0
 
 
@@ -98,10 +162,7 @@ def cmd_replay(args: argparse.Namespace) -> int:
     careful = play_run(params, deal, CarefulPlayer())
     print(f"--- your run (seed {seed}) ---")
     print("\n".join(yours.ledger))
-    print("--- result ---")
-    for name, r in (("you", yours), ("careful", careful)):
-        lost = f", lost on day {r.lost_on_day}" if r.lost_on_day else ""
-        print(f"{name:8} {'WIN ' if r.won else 'LOSS'} end coins {r.end_coins} (debt {int(params['debt'])}){lost}")
+    _print_results(params, yours, careful)
     return 0
 
 
@@ -129,11 +190,16 @@ def build_parser() -> argparse.ArgumentParser:
     deal = sub.add_parser("deal", help="deal a seeded run into the HandPlay and Reveal sheets")
     deal.add_argument("--ods", default="balance.ods")
     deal.add_argument("--seed", type=int, required=True)
+    deal.add_argument("--daily", action="store_true", help="deal only day 1; use next to go day by day")
     deal.set_defaults(func=cmd_deal)
 
     replay = sub.add_parser("replay", help="replay your HandPlay decisions and compare with the careful player")
     replay.add_argument("--ods", default="balance.ods")
     replay.set_defaults(func=cmd_replay)
+
+    nxt = sub.add_parser("next", help="daily mode: show how today went, then deal the next day")
+    nxt.add_argument("--ods", default="balance.ods")
+    nxt.set_defaults(func=cmd_next)
     return parser
 
 
