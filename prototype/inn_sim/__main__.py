@@ -174,6 +174,14 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export_fixtures(args: argparse.Namespace) -> int:
+    from inn_sim.export import export_fixtures
+
+    names = export_fixtures(load_params(Path(args.ods)), Path(args.out))
+    print(f"wrote {len(names)} fixtures and manifest.json to {args.out}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="inn_sim", description="Crossroads Inn paper-prototype simulation")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -213,6 +221,11 @@ def build_parser() -> argparse.ArgumentParser:
     exp.add_argument("--ods", default="balance.ods")
     exp.add_argument("--out", default="../game/data/params.json")
     exp.set_defaults(func=cmd_export)
+
+    fx = sub.add_parser("export-fixtures", help="write dealt runs + expected ledgers for the Godot parity test")
+    fx.add_argument("--ods", default="balance.ods")
+    fx.add_argument("--out", default="../game/tests/fixtures")
+    fx.set_defaults(func=cmd_export_fixtures)
     return parser
 
 

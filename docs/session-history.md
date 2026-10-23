@@ -134,3 +134,4 @@ Format: each session has a heading. Each step lists the user's request, then wha
 ### 16. "lets go native"
 - The user chose native execution for stage 2. Work happens on the branch `greybox-godot`.
 - Task 1: `python3 -m inn_sim export` writes `game/data/params.json` from `balance.ods`, with whole numbers written as ints. A test fails if the file is stale. 106 Python tests passing.
+- Task 2: `python3 -m inn_sim export-fixtures` writes 20 dealt runs, each with recorded decisions and the expected ledger, plus a `manifest.json` holding a params hash, to `game/tests/fixtures/`. The runs are 8 careful, 6 random, 3 accept-everyone and 3 haggle-everyone. Together they cover every rule branch: walk-outs, thefts, shortages, upkeep losses, all 3 final events, robbery stopped, each kind of decline, news, and wins. A test fails if the fixtures are stale. 111 Python tests passing.

@@ -120,3 +120,20 @@ class ScriptedPlayer:
             self.defaulted.append((day.day, slot))
             return "decline"
         return self.decisions[(day.day, slot)]
+
+
+class RecordingPlayer:
+    """Wraps another player and records every choice, so a run can be replayed elsewhere."""
+
+    def __init__(self, inner) -> None:
+        self.inner = inner
+        self.market_buys: dict[int, tuple[int, int]] = {}
+        self.decisions: dict[tuple[int, int], Action] = {}
+
+    def market(self, state: InnState, day: DayView, params: Params) -> tuple[int, int]:
+        self.market_buys[day.day] = self.inner.market(state, day, params)
+        return self.market_buys[day.day]
+
+    def decide(self, state: InnState, day: DayView, slot: int, view: TravelerView, params: Params) -> Action:
+        self.decisions[(day.day, slot)] = self.inner.decide(state, day, slot, view, params)
+        return self.decisions[(day.day, slot)]

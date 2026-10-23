@@ -1,0 +1,684 @@
+{
+ "name": "careful_2",
+ "params": {
+  "start_coins": 60,
+  "start_food": 10,
+  "start_firewood": 8,
+  "start_goodwill": 0,
+  "days": 7,
+  "debt": 64.0,
+  "upkeep": 3,
+  "rooms": 2,
+  "price_food": 2.0,
+  "price_firewood": 2.0,
+  "price_jitter": 0.25,
+  "p_cheap_day": 0.15,
+  "cheap_discount": 0.5,
+  "p_cold": 0.3,
+  "p_snow": 0.15,
+  "fire_base": 1,
+  "fire_per_room": 1,
+  "mult_cold": 1.5,
+  "mult_snow": 2.0,
+  "blizzard_mult": 2.0,
+  "shortage_coin_per_unit": 2,
+  "shortage_goodwill": 1,
+  "travelers_min": 3,
+  "travelers_max": 5,
+  "goodwill_arrival_threshold": 5.0,
+  "w_merchant": 3.0,
+  "w_pilgrim": 2.0,
+  "w_soldier": 2.0,
+  "w_noble": 1.0,
+  "w_wanderer": 1.0,
+  "thief_p": 0.2,
+  "pay_merchant": 8.0,
+  "pay_pilgrim": 1.0,
+  "pilgrim_goodwill": 1,
+  "pay_soldier": 6.0,
+  "food_per_meal": 1,
+  "goodwill_pay_bonus": 0.02,
+  "goodwill_cap": 10,
+  "hint_accuracy": 0.7,
+  "hint_false_pos": 0.2,
+  "thief_steal_frac": 0.1,
+  "noble_offer": 6,
+  "noble_mid": 10,
+  "noble_high": 12,
+  "p_noble_mid": 0.6,
+  "p_noble_high": 0.3,
+  "walkout_goodwill_loss": 2,
+  "hungry_soldiers_food": 6,
+  "final_food_penalty": 3,
+  "robbery_frac": 0.1,
+  "robbery_safe_goodwill": 4.0
+ },
+ "deal": {
+  "seed": 2,
+  "days": [
+   {
+    "day": 1,
+    "weather": "normal",
+    "price_food": 2,
+    "price_firewood": 2,
+    "cheap_day": false,
+    "base_arrivals": 3,
+    "travelers": [
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "final:hungry_soldiers"
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "cheap:5"
+     },
+     {
+      "kind": "noble",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "cheap:5"
+     },
+     {
+      "kind": "noble",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 1,
+      "news": null
+     }
+    ]
+   },
+   {
+    "day": 2,
+    "weather": "normal",
+    "price_food": 2,
+    "price_firewood": 2,
+    "cheap_day": false,
+    "base_arrivals": 5,
+    "travelers": [
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "cheap:5"
+     },
+     {
+      "kind": "merchant",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "final:hungry_soldiers"
+     }
+    ]
+   },
+   {
+    "day": 3,
+    "weather": "snow",
+    "price_food": 2,
+    "price_firewood": 2,
+    "cheap_day": false,
+    "base_arrivals": 5,
+    "travelers": [
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "noble",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "cheap:5"
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "final:hungry_soldiers"
+     }
+    ]
+   },
+   {
+    "day": 4,
+    "weather": "normal",
+    "price_food": 2,
+    "price_firewood": 2,
+    "cheap_day": false,
+    "base_arrivals": 5,
+    "travelers": [
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "final:hungry_soldiers"
+     },
+     {
+      "kind": "noble",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     }
+    ]
+   },
+   {
+    "day": 5,
+    "weather": "cold",
+    "price_food": 2,
+    "price_firewood": 1,
+    "cheap_day": true,
+    "base_arrivals": 4,
+    "travelers": [
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "merchant",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     }
+    ]
+   },
+   {
+    "day": 6,
+    "weather": "normal",
+    "price_food": 2,
+    "price_firewood": 2,
+    "cheap_day": false,
+    "base_arrivals": 3,
+    "travelers": [
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "noble",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "pilgrim",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     }
+    ]
+   },
+   {
+    "day": 7,
+    "weather": "cold",
+    "price_food": 2,
+    "price_firewood": 1,
+    "cheap_day": true,
+    "base_arrivals": 5,
+    "travelers": [
+     {
+      "kind": "merchant",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "merchant",
+      "is_thief": false,
+      "hint": true,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "soldier",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     },
+     {
+      "kind": "wanderer",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": "final:hungry_soldiers"
+     },
+     {
+      "kind": "merchant",
+      "is_thief": false,
+      "hint": false,
+      "noble_tier": 0,
+      "news": null
+     }
+    ]
+   }
+  ],
+  "final_event": "hungry_soldiers"
+ },
+ "market": {
+  "1": [
+   0,
+   0
+  ],
+  "2": [
+   0,
+   0
+  ],
+  "3": [
+   2,
+   4
+  ],
+  "4": [
+   4,
+   3
+  ],
+  "5": [
+   1,
+   12
+  ],
+  "6": [
+   2,
+   0
+  ],
+  "7": [
+   10,
+   8
+  ]
+ },
+ "decisions": [
+  [
+   1,
+   1,
+   "accept"
+  ],
+  [
+   1,
+   2,
+   "accept"
+  ],
+  [
+   1,
+   3,
+   "accept"
+  ],
+  [
+   2,
+   1,
+   "accept"
+  ],
+  [
+   2,
+   2,
+   "accept"
+  ],
+  [
+   2,
+   3,
+   "accept"
+  ],
+  [
+   2,
+   4,
+   "accept"
+  ],
+  [
+   2,
+   5,
+   "accept"
+  ],
+  [
+   3,
+   1,
+   "accept"
+  ],
+  [
+   3,
+   2,
+   "accept"
+  ],
+  [
+   3,
+   3,
+   "accept"
+  ],
+  [
+   3,
+   4,
+   "accept"
+  ],
+  [
+   3,
+   5,
+   "accept"
+  ],
+  [
+   4,
+   1,
+   "accept"
+  ],
+  [
+   4,
+   2,
+   "accept"
+  ],
+  [
+   4,
+   3,
+   "accept"
+  ],
+  [
+   4,
+   4,
+   "accept"
+  ],
+  [
+   4,
+   5,
+   "accept"
+  ],
+  [
+   4,
+   6,
+   "accept"
+  ],
+  [
+   5,
+   1,
+   "accept"
+  ],
+  [
+   5,
+   2,
+   "accept"
+  ],
+  [
+   5,
+   3,
+   "accept"
+  ],
+  [
+   5,
+   4,
+   "accept"
+  ],
+  [
+   5,
+   5,
+   "accept"
+  ],
+  [
+   6,
+   1,
+   "accept"
+  ],
+  [
+   6,
+   2,
+   "accept"
+  ],
+  [
+   6,
+   3,
+   "accept"
+  ],
+  [
+   6,
+   4,
+   "accept"
+  ],
+  [
+   7,
+   1,
+   "accept"
+  ],
+  [
+   7,
+   2,
+   "decline"
+  ],
+  [
+   7,
+   3,
+   "accept"
+  ],
+  [
+   7,
+   4,
+   "accept"
+  ],
+  [
+   7,
+   5,
+   "accept"
+  ],
+  [
+   7,
+   6,
+   "accept"
+  ]
+ ],
+ "ledger": [
+  "Day 1: normal, 3 travelers, coins 57 food 10 firewood 8",
+  "Day 1 slot 1: wanderer -> accept: accepted +0, news: the final night brings: hungry soldiers",
+  "Day 1 slot 2: soldier -> accept: accepted +6",
+  "Day 1 slot 3: wanderer -> accept: accepted +0, news: firewood is cheap on day 5",
+  "Day 1 night: burned 2 firewood; now coins 63 food 8 firewood 6",
+  "Day 2: normal, 5 travelers, coins 60 food 8 firewood 6",
+  "Day 2 slot 1: wanderer -> accept: accepted +0, news: firewood is cheap on day 5",
+  "Day 2 slot 2: merchant -> accept: accepted +8",
+  "Day 2 slot 3: pilgrim -> accept: accepted +1",
+  "Day 2 slot 4: pilgrim -> accept: accepted +1",
+  "Day 2 slot 5: pilgrim -> accept: accepted +1",
+  "Day 2 night: burned 2 firewood; now coins 71 food 3 firewood 4",
+  "Day 3: snow, 5 travelers, coins 56 food 5 firewood 8",
+  "Day 3 slot 1: pilgrim -> accept: accepted +1",
+  "Day 3 slot 2: noble -> accept: accepted +6",
+  "Day 3 slot 3: pilgrim -> accept: accepted +1",
+  "Day 3 slot 4: wanderer -> accept: accepted +0, news: firewood is cheap on day 5",
+  "Day 3 slot 5: soldier -> accept: accepted +7",
+  "Day 3 night: burned 6 firewood; now coins 71 food 2 firewood 2",
+  "Day 4: normal, 6 travelers, coins 54 food 6 firewood 5",
+  "Day 4 slot 1: pilgrim -> accept: accepted +1",
+  "Day 4 slot 2: soldier -> accept: accepted +7",
+  "Day 4 slot 3: wanderer -> accept: accepted +0, news: the final night brings: hungry soldiers",
+  "Day 4 slot 4: noble -> accept: accepted +6",
+  "Day 4 slot 5: soldier -> accept: declined (no room)",
+  "Day 4 slot 6: soldier -> accept: declined (no room)",
+  "Day 4 night: burned 3 firewood; now coins 68 food 4 firewood 2",
+  "Day 5: cold, 5 travelers, coins 51 food 5 firewood 14",
+  "Day 5 slot 1: pilgrim -> accept: accepted +1",
+  "Day 5 slot 2: merchant -> accept: accepted +9",
+  "Day 5 slot 3: soldier -> accept: accepted +7",
+  "Day 5 slot 4: pilgrim -> accept: accepted +1",
+  "Day 5 slot 5: soldier -> accept: declined (no room)",
+  "Day 5 night: burned 5 firewood; now coins 69 food 2 firewood 9",
+  "Day 6: normal, 4 travelers, coins 62 food 4 firewood 9",
+  "Day 6 slot 1: soldier -> accept: accepted +7",
+  "Day 6 slot 2: pilgrim -> accept: accepted +1",
+  "Day 6 slot 3: pilgrim -> accept: accepted +1",
+  "Day 6 slot 4: soldier -> accept: accepted +7",
+  "Day 6 night: burned 3 firewood; now coins 78 food 2 firewood 6",
+  "Day 7: cold, 6 travelers, coins 47 food 12 firewood 14",
+  "Day 7 slot 1: merchant -> accept: accepted +10",
+  "Day 7 slot 2: merchant -> decline: declined",
+  "Day 7 slot 3: soldier -> accept: accepted +7",
+  "Day 7 slot 4: soldier -> accept: declined (no room)",
+  "Day 7 slot 5: wanderer -> accept: accepted +0, news: the final night brings: hungry soldiers",
+  "Day 7 slot 6: merchant -> accept: declined (no room)",
+  "Day 7 night: burned 5 firewood, hungry soldiers, 0 food short; now coins 64 food 4 firewood 9",
+  "End: 64 coins vs debt 64: WIN"
+ ],
+ "result": {
+  "won": true,
+  "end_coins": 64,
+  "lost_on_day": null
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "params_hash": "9a3504406475ec3464818658c3aaa9aae97e09c727bae73278f6bd9922498a18",
+ "files": [
+  "careful_0.json",
+  "careful_1.json",
+  "careful_2.json",
+  "careful_3.json",
+  "careful_4.json",
+  "careful_5.json",
+  "careful_6.json",
+  "careful_7.json",
+  "random_0.json",
+  "random_1.json",
+  "random_2.json",
+  "random_3.json",
+  "random_4.json",
+  "random_5.json",
+  "accept_all_0.json",
+  "accept_all_1.json",
+  "accept_all_2.json",
+  "haggle_high_0.json",
+  "haggle_high_1.json",
+  "haggle_high_2.json"
+ ],
+ "regenerate": "cd prototype && python3 -m inn_sim export-fixtures"
+}
