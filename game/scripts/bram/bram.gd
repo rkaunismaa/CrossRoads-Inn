@@ -8,7 +8,7 @@ extends RefCounted
 const LINES := {
 	"morning_final_night": [
 		"Last night of the week. Whatever comes tonight, we face it with what's in the stores.",
-		"Day seven. The landlord comes at dawn, and something always goes wrong on the last night.",
+		"Day {day}, the last one. The landlord comes at dawn, and something always goes wrong on the final night.",
 	],
 	"morning_firewood_short": [
 		"The woodpile's thin. A full house tonight would leave us cold.",
@@ -19,7 +19,7 @@ const LINES := {
 		"We're short on food for today's crowd. Buy some, or turn hungry folk away.",
 	],
 	"morning_snow": [
-		"Snow on the road. Every hearth will eat twice the wood tonight.",
+		"Snow on the road. Every hearth will eat more wood tonight.",
 		"Snowing. Travelers will want warm rooms, and warm rooms want firewood.",
 	],
 	"morning_cheap_firewood": [

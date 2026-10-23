@@ -144,3 +144,10 @@ Format: each session has a heading. Each step lists the user's request, then wha
 - Task 8: the counter-layout screen (`game/scenes/main.gd`, built in code). It has the morning market, travelers at the counter with Accept, Decline and Haggle, greyed-out buttons with reasons, the night summary, the end screen and "Play again", and Bram speaks at each moment. 9 scene tests drive it through its buttons.
 - The agent can't play by hand from a terminal, so it rendered the real screen with a throwaway script and looked at screenshots of the morning, counter, night and end screens. That revealed a bug: the night top bar showed the next day. Fixed test-first, along with off-centre box captions and a missing margin. 72 GDScript tests passing.
 - Task 9: updated `docs/design.md` (stages 1 and 2 done, a grey-box section), `README.md` (status, how to play, regeneration commands), the `CLAUDE.md` layout and the AI log.
+- Final review by a fresh reviewer subagent: nothing critical, and the parity port and harness were judged solid. The agent fixed these, each with a test that failed first:
+  - the morning screen now says how many travelers are coming (a label, plus a count in the top bar);
+  - the counter's top bar shows "N more travelers today" from the first traveler;
+  - the end screen has a week summary;
+  - two of Bram's lines no longer hard-code balance numbers ("Day seven", "twice the wood").
+
+  76 GDScript tests passing. Six minor findings were deferred.

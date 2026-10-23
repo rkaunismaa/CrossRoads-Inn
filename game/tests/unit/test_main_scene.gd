@@ -116,3 +116,26 @@ func test_night_top_bar_shows_the_day_that_just_ended() -> void:
 		_node("Decline").pressed.emit()
 	assert_true(_node("NightPanel").visible)
 	assert_string_contains(_node("TopBar").text, "Day 1 of 7 · %s" % main.runner.deal.days[0].weather)
+
+
+func test_morning_shows_travelers_coming() -> void:
+	var n: int = main.runner.arrivals_today()
+	assert_string_contains(_node("TopBar").text, "%d travelers today" % n)
+	assert_string_contains(_node("Coming").text, "%d travelers" % n)
+
+
+func test_end_screen_has_week_summary() -> void:
+	_play_to_end()
+	var text: String = _node("EndText").text
+	assert_string_contains(text, "Accepted")
+	assert_string_contains(text, "thefts")
+	assert_string_contains(text, "cold nights")
+
+
+func test_counter_top_bar_counts_travelers_still_to_come() -> void:
+	_node("OpenDoors").pressed.emit()
+	if not _node("CounterPanel").visible:
+		pass_test("no travelers today")
+		return
+	var more: int = main.runner.travelers_left() - 1
+	assert_string_contains(_node("TopBar").text, "%d more travelers today" % more)

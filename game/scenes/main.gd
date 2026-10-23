@@ -53,6 +53,8 @@ func _start_morning() -> void:
 	var day := runner.day_deal()
 	var cheap := " (cheap today!)" if day.cheap_day else ""
 	%Prices.text = "Market: food %d coins, firewood %d coins%s" % [day.price_food, day.price_firewood, cheap]
+	var n := runner.arrivals_today()
+	%Coming.text = "%d traveler%s coming today." % [n, " is" if n == 1 else "s are"]
 	var news := PackedStringArray()
 	for item in runner.state.news:
 		news.append("• " + InnRules.describe_news(item))
@@ -109,6 +111,7 @@ func refresh_counter() -> void:
 	%HaggleHigh.text = "Haggle: ask %d" % int(params.noble_high)
 	var left := runner.travelers_left() - 1
 	%TravelersLeft.text = "%d more traveler%s today" % [left, "" if left == 1 else "s"]
+	_refresh_top()
 
 
 func _decide(action: String) -> void:
@@ -147,8 +150,26 @@ func _show_end() -> void:
 	else:
 		%EndText.text = "%s\nYou ended the week with %d coins; the landlord wanted %d." % [
 			"You kept the inn!" if r.won else "You couldn't pay the landlord.", r.end_coins, debt]
+	%EndText.text += "\n\n" + _week_summary()
 	%EndPanel.visible = true
 	_refresh_top()
+
+
+## A few totals from the ledger, for the end screen.
+func _week_summary() -> String:
+	var accepted := 0
+	var thefts := 0
+	var cold_nights := 0
+	for line in runner.ledger:
+		if line.contains(" slot ") and line.contains(": accepted"):
+			accepted += 1
+		thefts += line.count("thief stole")
+		if line.contains(" night: short "):
+			cold_nights += 1
+	var summary := "Accepted %d travelers · %d thefts · %d cold nights" % [accepted, thefts, cold_nights]
+	if runner.result().lost_on_day == 0:
+		summary += "\nFinal night: %s" % runner.deal.final_event.replace("_", " ")
+	return summary
 
 
 # --- display helpers --------------------------------------------------------------------------
@@ -173,6 +194,10 @@ func _refresh_top() -> void:
 	var day := runner.deal.days[_shown_day() - 1]
 	%TopBar.text = "Coins %d   Food %d   Firewood %d   Rooms %d/%d   Day %d of %d · %s" % [
 		s.coins, s.food, s.firewood, s.occupied, int(params.rooms), day.day, int(params.days), day.weather]
+	if %MorningPanel.visible:
+		%TopBar.text += "   · %d travelers today" % runner.arrivals_today()
+	elif %CounterPanel.visible:
+		%TopBar.text += "   · %d more travelers today" % maxi(0, runner.travelers_left() - 1)
 
 
 ## The day the screen is about: during the night summary that's the day just ended.
@@ -280,6 +305,7 @@ func _build_ui() -> void:
 	# Morning: prices, news, buying, then open the doors.
 	var morning: VBoxContainer = _named(VBoxContainer.new(), "MorningPanel")
 	morning.add_child(_label("Prices"))
+	morning.add_child(_label("Coming"))
 	morning.add_child(_label("NewsList"))
 	var buys := HBoxContainer.new()
 	for pair in [["BuyFood", "Buy food:"], ["BuyFirewood", "Buy firewood:"]]:

@@ -110,3 +110,10 @@ func test_same_seed_same_lines() -> void:
 	var b := Bram.new(9)
 	for f in facts:
 		assert_eq(a.line_for(f), b.line_for(f))
+
+
+func test_lines_hold_no_balance_numbers() -> void:
+	var regex := RegEx.create_from_string("[0-9]|\\b(two|three|four|five|six|seven|twice|double)\\b")
+	for situation: String in Bram.LINES:
+		for line: String in Bram.LINES[situation]:
+			assert_null(regex.search(line.to_lower()), "%s: %s" % [situation, line])
