@@ -23,7 +23,7 @@ tools/export-linux.sh       # builds build/linux/ and smoke-tests the exported b
 `build/linux/` then contains:
 - `CrossroadsInn.x86_64`, the game;
 - `CrossroadsInn.pck`, the game data: scripts, art, and `params.json` and `bram_llm.json`;
-- `THIRD_PARTY_NOTICES.txt`, the Godot license and component list plus the AI model notices.
+- `THIRD_PARTY_NOTICES.txt`, with the Godot licence, every component's copyright lines and licence, the full licence texts, and the AI model notices.
 
 Tests, test fixtures, GUT and the eval tools are left out of the build.
 
@@ -31,7 +31,9 @@ The smoke test runs `CrossroadsInn.x86_64 --headless -- --smoke-test`. The expor
 
 ## Bram's LLM on players' machines
 
-The build doesn't include any AI model and never contacts an online service. If a player runs Ollama locally with `ollama pull qwen3:4b-instruct`, Bram's lines are phrased by that model. Otherwise he uses his hand-written lines, with no error. The setting is in `game/data/bram_llm.json`, which is inside the `.pck`. To ship with the LLM switched off, set `"enabled": false` before exporting.
+The build doesn't include any AI model and never contacts an online service. Bram's "local AI voice" is an in-game checkbox, off by default and saved in `user://settings.cfg`. If a player turns it on and runs Ollama locally with `ollama pull qwen3:4b-instruct`, Bram's lines are phrased by that model and marked "(local AI)". Otherwise he uses his hand-written lines, with no error. To remove the feature from a build entirely, set `"enabled": false` in `game/data/bram_llm.json` before exporting.
+
+The export script also checks that `THIRD_PARTY_NOTICES.txt` contains the licence texts, and that the exported game found its LLM settings file (`"llm_config":"ok"`), so a build can't silently ship without them.
 
 ## Steam
 

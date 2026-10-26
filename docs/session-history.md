@@ -261,3 +261,18 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - The windowed build runs with no errors.
   - Fixed one wrong line in the release doc (no `.sh` launcher is made on Linux).
 - Updated `docs/design.md`, `README.md` and the AI log.
+
+### 5. "review first"
+- The user asked for an independent review of `stage6-export` before merging. The agent sent a fresh reviewer subagent. The diff file was missing at first because the scratch folder hadn't been created; the agent fixed that and told the reviewer.
+- The reviewer found nothing critical, and confirmed the build, the export filter and that the smoke test exercises the real release binary. It reported 5 important and 8 minor findings.
+- The agent re-graded 2 minors as important, because inaccurate disclosure and legal text shouldn't ship: the guardrail list overclaimed slightly, and the notice wrongly said the images were under the SDXL licence.
+- Fixes (scene changes test-first; 6 new tests, 112 GDScript tests passing):
+  - **LLM opt-in (Important 1 and 2).** A "Bram's local AI voice" checkbox, off by default and saved in `user://settings.cfg`. No model loads unless the player opts in, and AI-phrased lines are marked "(local AI)". This reverses the agent's earlier "on if Ollama is present" call. The disclosure now says how players switch it.
+  - **Notices (Important 3).** They now include every component's copyright lines and licence, plus all 19 full licence texts (2,231 lines). The SDXL wording was corrected (the model, not the images, is under that licence), and the writer handles a failed file write.
+  - **Export script (Important 4 and 5).** `timeout 120` on the notices step and the smoke test; the game's exit code is checked; the smoke test must report `"llm_config":"ok"`; the notices must contain licence texts. A negative check (exporting without `bram_llm.json`) failed as it should, and the export was green again once the file was restored.
+  - **Docs.** The disclosure's guardrails are worded exactly as they work, and the model-alone injection figure (2/30) is added. The release notes, README and design doc describe the opt-in.
+- Deferred minors:
+  - `art/provenance.json` is packed (harmless);
+  - `rm -rf build/linux` happens before the export, so a failed export leaves no build;
+  - import errors are hidden;
+  - the smoke run only declines travelers.

@@ -8,8 +8,13 @@ var main: Control
 func before_each() -> void:
 	main = MainScene.instantiate()
 	main.llm_config_path = "res://data/no_llm_in_scene_tests.json"  # never reach a live model, however tests are run
+	main.settings_path = "user://test_settings_%d.cfg" % randi()  # a fresh, empty settings file per test
 	add_child_autofree(main)
 	main.start_run(3)
+
+
+func after_each() -> void:
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(main.settings_path))
 
 
 func _node(name: String) -> Node:
@@ -179,10 +184,10 @@ func test_bram_shows_fixed_line_without_llm() -> void:
 	assert_ne(_node("BramBubble").text, "")
 
 
-func test_llm_line_replaces_fixed_line() -> void:
+func test_llm_line_replaces_fixed_line_and_is_marked() -> void:
 	main.pending_bram_id = 42
 	main.llm.line_ready.emit(42, "Mind the merchant's purse, friend.")
-	assert_eq(_node("BramBubble").text, "Mind the merchant's purse, friend.")
+	assert_eq(_node("BramBubble").text, "Mind the merchant's purse, friend." + main.AI_MARK)
 
 
 func test_stale_llm_line_is_ignored() -> void:
@@ -215,3 +220,38 @@ func test_smoke_run_reports_missing_params() -> void:
 	var r: Dictionary = main.run_smoke(11)
 	assert_false(r.ok)
 	assert_string_contains(str(r.params), "nope.json")
+
+
+
+# --- review fixes (stage 6): Bram's AI voice is opt-in, remembered, and marked ---
+
+func test_ai_voice_is_off_by_default() -> void:
+	assert_false(main.ai_voice)
+	assert_false((_node("AIVoice") as CheckButton).button_pressed)
+	assert_false(main.llm.enabled)
+
+
+func test_ai_voice_choice_is_remembered() -> void:
+	main.set_ai_voice(true)
+	assert_true(main.ai_voice)
+	var again: Control = MainScene.instantiate()
+	again.llm_config_path = main.llm_config_path
+	again.settings_path = main.settings_path
+	add_child_autofree(again)
+	assert_true(again.ai_voice)
+	assert_true((again.get_node("%AIVoice") as CheckButton).button_pressed)
+
+
+func test_ai_voice_checkbox_turns_it_on_and_off() -> void:
+	(_node("AIVoice") as CheckButton).button_pressed = true
+	assert_true(main.ai_voice)
+	(_node("AIVoice") as CheckButton).button_pressed = false
+	assert_false(main.ai_voice)
+	assert_false(main.llm.enabled)
+
+
+func test_smoke_reports_llm_config_separately() -> void:
+	var r: Dictionary = main.run_smoke(11)
+	assert_eq(r.llm_config, "missing: res://data/no_llm_in_scene_tests.json")
+	main.llm_config_path = "res://data/bram_llm.json"
+	assert_eq(main.run_smoke(11).llm_config, "ok")

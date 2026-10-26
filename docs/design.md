@@ -41,7 +41,8 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 ## Bram (runtime AI)
 - Game code produces a facts object holding only what the player could know (`game/scripts/bram/bram_facts.gd`). The code also decides what Bram talks about: the situation, such as "warn about this merchant".
 - A local 4B model (Qwen3-4B Instruct, Apache 2.0, run by Ollama) phrases that as one short line. Bram's fixed lines are given as examples of his voice.
-- The fixed line shows at once. The LLM line replaces it only if it arrives for the same moment and passes the checks. If Ollama isn't running, Bram simply keeps his fixed lines.
+- The fixed line shows at once. The LLM line replaces it only if it arrives for the same moment and passes the checks, and it is marked "(local AI)". If Ollama isn't running, Bram simply keeps his fixed lines.
+- The player opts in with the "Bram's local AI voice" checkbox, which is off by default and remembered in `user://settings.cfg`. No model is loaded unless the player turns it on.
 - There are two safety layers:
   - **Before the model:** facts must match a strict schema (known keys, types and words), so outside text can't reach the model.
   - **After the model:** replies are rejected if they are too long, invent numbers, break character, claim certainty about a thief, or mention things not in the facts.
@@ -54,7 +55,7 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 3. Generated 2D art (portraits, backdrop) via ComfyUI. Done: a painted inn backdrop and portraits of the five traveler types and Bram, made with SDXL base 1.0 on a local ComfyUI. See `tools/comfyui/` and `game/art/provenance.json`.
 4. Optional: one 3D prop via image-to-3D, cleaned in Blender, rendered to a sprite.
 5. Local-LLM dialogue for Bram. Done (see Bram above).
-6. Linux export and Steam AI-disclosure review. Done: `tools/export-linux.sh` builds and smoke-tests `build/linux/`. See `docs/release.md` and the drafted disclosure in `docs/steam-ai-disclosure.md`. Bram's LLM ships as an optional local feature: the game uses Ollama if the player has it, and his fixed lines otherwise.
+6. Linux export and Steam AI-disclosure review. Done: `tools/export-linux.sh` builds and smoke-tests `build/linux/`. See `docs/release.md` and the drafted disclosure in `docs/steam-ai-disclosure.md`. Bram's LLM ships as an opt-in local feature (a checkbox, off by default). When it's on, the game uses Ollama if the player has it, and his fixed lines otherwise.
 
 ## Grey-box (stage 2)
 - One screen in the counter layout. The traveler comes in from the door with a speech bubble, Bram stands beside the counter with his own, and the stock sits in a top bar with "N more travelers today".
