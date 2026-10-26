@@ -19,7 +19,7 @@ Everything below can be checked against records in this repository.
 
 **Paste-ready answer:**
 
-> Bram's "local AI voice" is an optional setting, off by default. If the player turns it on and has Ollama installed with the Qwen3-4B Instruct model (Apache 2.0), the recurring character Bram may have his one-line comments phrased live by that model, running entirely on the player's own machine. Lines phrased this way are marked "(local AI)" on screen. The game does not include, download or contact any online AI service. With the setting off, or without Ollama, Bram uses hand-written lines. The model never decides anything in the game: all outcomes, numbers and events come from game code.
+> "Bram's lines written by local AI" is an optional setting, off by default. If the player turns it on and has Ollama installed with the Qwen3-4B Instruct model (Apache 2.0), the recurring character Bram may have his one-line comments phrased live by that model, running entirely on the player's own machine. Lines phrased this way are marked "(local AI)" on screen. The game does not include, download or contact any online AI service. With the setting off, or without Ollama, Bram uses hand-written lines. The model never decides anything in the game: all outcomes, numbers and events come from game code.
 >
 > Guardrails:
 > 1. **Input.** The model only receives a small set of facts built by game code (for example the day, the weather, the traveler's kind, and whether Bram is suspicious). Each fact is checked against a strict schema of known keys, types and words before sending, so no player-written or outside text can reach the model.
@@ -39,7 +39,7 @@ Everything below can be checked against records in this repository.
 **Where the evidence is:**
 - `game/scripts/bram/bram_voice.gd` has the schema and reply checks; `game/scripts/bram/bram_llm.gd` has the local-only client.
 - `docs/bram-eval.md` has the live results: 256 of 256 lines passed in normal play, and all injections were refused with the schema on.
-- Players switch the feature on or off with the "Bram's local AI voice" checkbox, which is off by default and saved in `user://settings.cfg`. The developer can remove the feature at build time with `"enabled": false` in `game/data/bram_llm.json`.
+- Players switch the feature on or off with the "Bram's lines written by local AI" checkbox, which is off by default and saved in `user://settings.cfg`. The developer can remove the feature at build time with `"enabled": false` in `game/data/bram_llm.json`.
 
 ## Open questions for the developer before submitting
 

@@ -29,7 +29,7 @@ func _initialize() -> void:
 		"The images in this game were generated with Stable Diffusion XL base 1.0 by Stability AI",
 		"(the model is licensed under the CreativeML Open RAIL++-M License).", "",
 		"== Bram's optional dialogue model ==",
-		"If the player turns on \"Bram's local AI voice\" and has Ollama installed, Bram's lines may be phrased",
+		"If the player turns on \"Bram's lines written by local AI\" and has Ollama installed, Bram's lines may be phrased",
 		"on the player's computer by Qwen3-4B Instruct (Apache License 2.0). The model is not included with this game."])
 	var f := FileAccess.open(args[0], FileAccess.WRITE)
 	if f == null:

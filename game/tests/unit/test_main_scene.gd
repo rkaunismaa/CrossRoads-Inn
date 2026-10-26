@@ -255,3 +255,10 @@ func test_smoke_reports_llm_config_separately() -> void:
 	assert_eq(r.llm_config, "missing: res://data/no_llm_in_scene_tests.json")
 	main.llm_config_path = "res://data/bram_llm.json"
 	assert_eq(main.run_smoke(11).llm_config, "ok")
+
+
+func test_checkbox_says_text_not_sound() -> void:
+	# There is no audio in the game: the label must not suggest Bram speaks out loud.
+	var label: String = (_node("AIVoice") as CheckButton).text
+	assert_eq(label, "Bram's lines written by local AI")
+	assert_false(label.to_lower().contains("voice"))

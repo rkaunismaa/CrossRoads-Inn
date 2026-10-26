@@ -282,3 +282,13 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 7. "yes please" (push)
 - Pushed `main` to GitHub, including stage 6. All six stages in the design doc are now done except the optional stage 4.
+
+### 8. "i am not hearing the voice"
+- The agent realized its label "Bram's local AI voice" was misleading: the game has no sound at all. The "voice" only means the local model writes the text in Bram's speech bubble. The agent checked Ollama, the model and the saved setting, then explained this to the user.
+
+### 9. "What is this Steam thing you keep talking about?"
+- The agent explained Steam (Valve's PC game store) and its AI-content disclosure, and pointed out that the Steam goal came from the design doc's stage 6 ("Linux export and Steam AI-disclosure review"). Nothing has been uploaded anywhere.
+
+### 10. "rename the checkbox"
+- Renamed the checkbox from "Bram's local AI voice" to "Bram's lines written by local AI", in the game, the notices, the README, the design doc, the release notes and the disclosure. The internal setting name stays the same, so the user's saved "on" choice still works.
+- Added a test first (the label must not say "voice", since there's no audio). Watched it fail, then pass. 113 GDScript tests passing, and the export passes.

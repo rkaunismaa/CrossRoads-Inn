@@ -51,7 +51,7 @@ godot --path game                  # play the grey-box game
 
 **Linux build.** `tools/export-linux.sh` exports `build/linux/` and smoke-tests the exported game. It needs Godot's export templates; see [`docs/release.md`](docs/release.md).
 
-**Bram's LLM.** In the game, tick **Bram's local AI voice** (it's off by default) to let a local model phrase his lines; they are marked "(local AI)". Build-wide settings are in `game/data/bram_llm.json`. Evaluate it against the real model (Ollama running) with:
+**Bram's LLM.** In the game, tick **Bram's lines written by local AI** (it's off by default) to let a local model phrase his lines; they are marked "(local AI)". Build-wide settings are in `game/data/bram_llm.json`. Evaluate it against the real model (Ollama running) with:
 
 ```bash
 godot --headless --path game --script res://tools/bram_eval.gd   # writes docs/bram-eval.md
