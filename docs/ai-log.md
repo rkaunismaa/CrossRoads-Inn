@@ -65,3 +65,16 @@ Short notes on what the agent did, what was fixed by hand, and rough time spent.
   All five were fixed test-first. The new live eval at first rejected 3 good lines ("won't" matched "won"), which was fixed test-first too. 106 tests passing; the live eval shows 256/256 lines OK.
 - Slip: the agent wrote "a regular" for Bram in a spike prompt again, and caught it before it reached the real prompt.
 - Fixed by hand: nothing. Time: about 1 hour, plus about 13 minutes of model downloads.
+
+## 2026-10-26 - Linux export and Steam AI disclosure (stage 6)
+- Agent: the user skipped the questions. The agent decided Bram's LLM ships as an optional local feature (Ollama if present, fixed lines otherwise), and that no Steam upload would happen. It then:
+  - downloaded the 1.28 GB Godot 4.7.2 template bundle, checked it against the published SHA-512, and installed only the Linux templates;
+  - added a test-first smoke mode (`-- --smoke-test`) so the exported build checks itself;
+  - wrote an export preset that leaves out tests, fixtures, GUT and tools, and `tools/export-linux.sh` (export, then the notices file, then the smoke test);
+  - wrote a notices writer that uses Godot's own license text;
+  - drafted `docs/steam-ai-disclosure.md` and `docs/release.md`.
+- Verified:
+  - the exported binary's smoke test reports params OK, 7/7 images and a full week played;
+  - a check of the `.pck` file showed no tests, fixtures, eval tool or GUT code;
+  - the windowed build runs with no errors.
+- Fixed by hand: nothing. Time: about 30 minutes, plus the template download.

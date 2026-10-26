@@ -54,7 +54,7 @@ You run a tiny inn at a crossroads for 7 in-game days. Each day, 3-5 travelers a
 3. Generated 2D art (portraits, backdrop) via ComfyUI. Done: a painted inn backdrop and portraits of the five traveler types and Bram, made with SDXL base 1.0 on a local ComfyUI. See `tools/comfyui/` and `game/art/provenance.json`.
 4. Optional: one 3D prop via image-to-3D, cleaned in Blender, rendered to a sprite.
 5. Local-LLM dialogue for Bram. Done (see Bram above).
-6. Linux export and Steam AI-disclosure review.
+6. Linux export and Steam AI-disclosure review. Done: `tools/export-linux.sh` builds and smoke-tests `build/linux/`. See `docs/release.md` and the drafted disclosure in `docs/steam-ai-disclosure.md`. Bram's LLM ships as an optional local feature: the game uses Ollama if the player has it, and his fixed lines otherwise.
 
 ## Grey-box (stage 2)
 - One screen in the counter layout. The traveler comes in from the door with a speech bubble, Bram stands beside the counter with his own, and the stock sits in a top bar with "N more travelers today".

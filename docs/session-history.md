@@ -236,3 +236,28 @@ Format: each session has a heading. Each step lists the user's request, then wha
 
 ### 6. "yes" (push)
 - Pushed `main` to GitHub, including stage 5.
+
+---
+
+## Session 4 - 2026-10-26 (resumed)
+
+### 1. "ok so whats next?"
+- The agent checked the state: `main` matches GitHub, and stages 1, 2, 3 and 5 are done. It summarized the remaining options for the user (stage 6, stage 4, the open balance and polish items).
+
+### 2. "i want to run the game from a new terminal window. what do i type?"
+- The agent gave the commands (`cd` into the project, then `godot --path game`) and confirmed Ollama is running with `qwen3:4b-instruct`, so Bram's LLM lines will work.
+
+### 3. "start stage 6"
+- Started a design conversation (brainstorming) for stage 6: the Linux export and the Steam AI-disclosure review.
+
+### 4. "just do it"
+- The user skipped the questions. The agent's calls: Bram's LLM ships as an optional local feature (it uses the player's Ollama if present, otherwise fixed lines, and never contacts an online service), and the work stops at a build and a drafted disclosure, with no Steam upload.
+- Branch `stage6-export`. Downloaded the Godot 4.7.2 export templates (1.28 GB), confirmed the SHA-512 against `SHA512-SUMS.txt`, and installed only the Linux templates to `~/.local/share/godot/export_templates/4.7.2.stable/`.
+- Added a smoke-test mode (`game -- --smoke-test`), test-first, with 2 new tests: it plays a full week headless and reports params, art and the result. 108 GDScript tests passing.
+- Added `game/export_presets.cfg` (Linux; leaves out tests, GUT and tools), `tools/export-linux.sh` (export, notices, then the smoke test of the exported binary), `game/tools/write_notices.gd` (Godot's license text plus the AI model notices), `docs/release.md` and `docs/steam-ai-disclosure.md`. Added `build/` to `.gitignore`.
+- Results:
+  - The exported build's smoke test passed (`"ok":true`, 7 images, params OK).
+  - The `.pck` holds no tests, fixtures, eval tool or GUT code; only the editor-plugin setting names GUT.
+  - The windowed build runs with no errors.
+  - Fixed one wrong line in the release doc (no `.sh` launcher is made on Linux).
+- Updated `docs/design.md`, `README.md` and the AI log.

@@ -32,6 +32,10 @@ func _ready() -> void:
 	llm.line_ready.connect(_on_llm_line)
 	llm.warm_up()
 	start_run(randi())
+	if "--smoke-test" in OS.get_cmdline_user_args():  # used by tools/export-linux.sh on the exported build
+		var r := run_smoke(1)
+		print("SMOKE ", JSON.stringify(r))
+		get_tree().quit(0 if r.ok else 1)
 
 
 ## Start a fresh run: new deal, new state, empty ledger.
@@ -184,6 +188,34 @@ func _week_summary() -> String:
 	if runner.result().lost_on_day == 0:
 		summary += "\nFinal night: %s" % runner.deal.final_event.replace("_", " ")
 	return summary
+
+
+# --- smoke test ------------------------------------------------------------------------------
+
+const ART_IDS: PackedStringArray = ["backdrop", "bram", "merchant", "pilgrim", "soldier", "noble", "wanderer"]
+
+
+## Play a whole week by pressing through it (declining everyone) and report what loaded.
+## Lets an exported build check itself: params, art and the full day loop.
+func run_smoke(seed: int) -> Dictionary:
+	start_run(seed)
+	var art := 0
+	for id in ART_IDS:
+		if _art(id) != null:
+			art += 1
+	if %ErrorText.visible:
+		return {"ok": false, "params": %ErrorText.text, "art_loaded": art, "ledger_end": "", "llm": llm.enabled}
+	for i in 500:
+		if %EndPanel.visible:
+			break
+		if %MorningPanel.visible:
+			_on_open_doors()
+		elif %CounterPanel.visible:
+			_decide("decline")
+		elif %NightPanel.visible:
+			_on_continue()
+	return {"ok": %EndPanel.visible, "params": "ok", "art_loaded": art,
+		"ledger_end": runner.ledger[-1] if runner.ledger.size() > 0 else "", "llm": llm.enabled}
 
 
 # --- Bram ------------------------------------------------------------------------------------

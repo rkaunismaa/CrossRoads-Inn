@@ -197,3 +197,21 @@ func test_new_moment_drops_the_pending_reply() -> void:
 	_node("OpenDoors").pressed.emit()
 	main.llm.line_ready.emit(42, "Too late now.")
 	assert_ne(_node("BramBubble").text, "Too late now.")
+
+
+# --- smoke test for exported builds (stage 6) ---
+
+func test_smoke_run_plays_a_week_and_reports() -> void:
+	var r: Dictionary = main.run_smoke(11)
+	assert_true(r.ok, str(r))
+	assert_eq(r.params, "ok")
+	assert_eq(r.art_loaded, 7)
+	assert_true(str(r.ledger_end).begins_with("End:") or str(r.ledger_end).contains("could not pay upkeep"))
+	assert_true(_node("EndPanel").visible)
+
+
+func test_smoke_run_reports_missing_params() -> void:
+	main.params_path = "res://data/nope.json"
+	var r: Dictionary = main.run_smoke(11)
+	assert_false(r.ok)
+	assert_string_contains(str(r.params), "nope.json")
