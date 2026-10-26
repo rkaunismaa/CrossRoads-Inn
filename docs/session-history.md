@@ -276,3 +276,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
   - `rm -rf build/linux` happens before the export, so a failed export leaves no build;
   - import errors are hidden;
   - the smoke run only declines travelers.
+
+### 6. "1" (merge locally)
+- Merged `stage6-export` into `main`. On `main`, 112 GDScript tests, 111 Python tests and 6 art-tool tests pass, and `tools/export-linux.sh` passes. Deleted the local branch, which was never pushed.
