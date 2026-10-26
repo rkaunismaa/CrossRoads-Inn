@@ -292,3 +292,6 @@ Format: each session has a heading. Each step lists the user's request, then wha
 ### 10. "rename the checkbox"
 - Renamed the checkbox from "Bram's local AI voice" to "Bram's lines written by local AI", in the game, the notices, the README, the design doc, the release notes and the disclosure. The internal setting name stays the same, so the user's saved "on" choice still works.
 - Added a test first (the label must not say "voice", since there's no audio). Watched it fail, then pass. 113 GDScript tests passing, and the export passes.
+
+### 11. "yes" (push)
+- Pushed `main` to GitHub with the checkbox rename.
